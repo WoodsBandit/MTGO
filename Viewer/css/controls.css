@@ -1,0 +1,689 @@
+/* =============================================================================
+   MTGO Replay Viewer - Playback Controls CSS
+   ============================================================================= */
+
+/* -----------------------------------------------------------------------------
+   CSS Variables
+   ----------------------------------------------------------------------------- */
+:root {
+    --control-bg: rgba(20, 20, 20, 0.92);
+    --control-bg-solid: #1a1a1a;
+    --control-border: rgba(255, 255, 255, 0.1);
+    --control-height: 80px;
+    --control-height-mobile: 120px;
+
+    /* MTG Gold/Amber Accent */
+    --accent-gold: #d4a84b;
+    --accent-gold-light: #e8c36a;
+    --accent-gold-dark: #b8912f;
+    --accent-glow: rgba(212, 168, 75, 0.4);
+
+    /* Text Colors */
+    --text-primary: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.7);
+    --text-muted: rgba(255, 255, 255, 0.5);
+
+    /* Button Colors */
+    --btn-bg: rgba(255, 255, 255, 0.1);
+    --btn-hover: rgba(255, 255, 255, 0.2);
+    --btn-active: rgba(212, 168, 75, 0.3);
+
+    /* Timeline Colors */
+    --timeline-bg: rgba(255, 255, 255, 0.15);
+    --timeline-progress: var(--accent-gold);
+    --timeline-buffer: rgba(255, 255, 255, 0.3);
+    --timeline-marker: #ffffff;
+}
+
+/* -----------------------------------------------------------------------------
+   Control Bar Container
+   ----------------------------------------------------------------------------- */
+.control-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: var(--control-height);
+    background: var(--control-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid var(--control-border);
+    display: flex;
+    flex-direction: column;
+    z-index: 1000;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    user-select: none;
+}
+
+/* -----------------------------------------------------------------------------
+   Timeline Scrubber
+   ----------------------------------------------------------------------------- */
+.timeline-container {
+    width: 100%;
+    padding: 0 16px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+}
+
+.timeline-wrapper {
+    position: relative;
+    width: 100%;
+    height: 6px;
+    background: var(--timeline-bg);
+    border-radius: 3px;
+    overflow: visible;
+    transition: height 0.15s ease;
+}
+
+.timeline-container:hover .timeline-wrapper {
+    height: 8px;
+}
+
+.timeline-progress {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-gold-dark), var(--accent-gold));
+    border-radius: 3px;
+    width: 0%;
+    transition: width 0.1s linear;
+}
+
+.timeline-buffer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background: var(--timeline-buffer);
+    border-radius: 3px;
+    width: 0%;
+}
+
+.timeline-marker {
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    width: 14px;
+    height: 14px;
+    background: var(--timeline-marker);
+    border: 2px solid var(--accent-gold);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--accent-glow);
+    transition: transform 0.15s ease;
+    z-index: 10;
+    pointer-events: none;
+}
+
+.timeline-container:hover .timeline-marker {
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.timeline-marker.dragging {
+    transform: translate(-50%, -50%) scale(1.2);
+}
+
+/* Timeline Tooltip */
+.timeline-tooltip {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    transform: translateX(-50%);
+    background: var(--control-bg-solid);
+    color: var(--text-primary);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+    margin-bottom: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.timeline-container:hover .timeline-tooltip {
+    opacity: 1;
+}
+
+/* -----------------------------------------------------------------------------
+   Main Controls Row
+   ----------------------------------------------------------------------------- */
+.controls-main {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    gap: 16px;
+}
+
+/* Left Section - Turn/Phase Display */
+.controls-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 180px;
+}
+
+.turn-display,
+.phase-display {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.turn-label,
+.phase-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+}
+
+.turn-value {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--accent-gold);
+}
+
+.phase-value {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.display-divider {
+    width: 1px;
+    height: 28px;
+    background: var(--control-border);
+}
+
+/* Center Section - Playback Buttons */
+.controls-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.control-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--btn-bg);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    color: var(--text-primary);
+}
+
+.control-btn:hover {
+    background: var(--btn-hover);
+    transform: scale(1.05);
+}
+
+.control-btn:active {
+    background: var(--btn-active);
+    transform: scale(0.95);
+}
+
+.control-btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--accent-glow);
+}
+
+/* Small buttons (skip, step) */
+.control-btn-sm {
+    width: 36px;
+    height: 36px;
+    font-size: 14px;
+}
+
+/* Medium buttons (prev/next) */
+.control-btn-md {
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+}
+
+/* Large button (play/pause) */
+.control-btn-lg {
+    width: 52px;
+    height: 52px;
+    font-size: 22px;
+    background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-dark));
+    box-shadow: 0 4px 12px var(--accent-glow);
+}
+
+.control-btn-lg:hover {
+    background: linear-gradient(135deg, var(--accent-gold-light), var(--accent-gold));
+    box-shadow: 0 6px 16px var(--accent-glow);
+}
+
+.control-btn-lg:active {
+    background: linear-gradient(135deg, var(--accent-gold-dark), var(--accent-gold));
+}
+
+/* Button Icons */
+.btn-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+/* Play/Pause Icon States */
+.icon-play::before {
+    content: '';
+    display: block;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 8px 0 8px 14px;
+    border-color: transparent transparent transparent var(--text-primary);
+    margin-left: 3px;
+}
+
+.icon-pause::before {
+    content: '';
+    display: flex;
+    width: 14px;
+    height: 16px;
+    border-left: 4px solid var(--text-primary);
+    border-right: 4px solid var(--text-primary);
+}
+
+.icon-skip-back::before,
+.icon-skip-forward::before {
+    content: '';
+    display: block;
+    width: 0;
+    height: 0;
+    border-style: solid;
+}
+
+.icon-skip-back::before {
+    border-width: 6px 10px 6px 0;
+    border-color: transparent var(--text-primary) transparent transparent;
+}
+
+.icon-skip-forward::before {
+    border-width: 6px 0 6px 10px;
+    border-color: transparent transparent transparent var(--text-primary);
+}
+
+.icon-step-back::before,
+.icon-step-forward::before {
+    content: '';
+    display: flex;
+    align-items: center;
+}
+
+.icon-step-back::before {
+    border-left: 2px solid var(--text-primary);
+    border-right: none;
+    padding-right: 2px;
+}
+
+.icon-step-forward::before {
+    border-right: 2px solid var(--text-primary);
+    border-left: none;
+    padding-left: 2px;
+}
+
+/* Right Section - Speed Control */
+.controls-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 180px;
+    justify-content: flex-end;
+}
+
+.speed-control {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.speed-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    min-width: 24px;
+    text-align: right;
+}
+
+.speed-value {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--accent-gold);
+    min-width: 36px;
+    text-align: center;
+}
+
+/* Speed Slider */
+.speed-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100px;
+    height: 4px;
+    background: var(--timeline-bg);
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+}
+
+.speed-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    background: var(--accent-gold);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 6px var(--accent-glow);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.speed-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+    box-shadow: 0 3px 10px var(--accent-glow);
+}
+
+.speed-slider::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    background: var(--accent-gold);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 6px var(--accent-glow);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.speed-slider::-moz-range-thumb:hover {
+    transform: scale(1.2);
+    box-shadow: 0 3px 10px var(--accent-glow);
+}
+
+/* Speed Presets */
+.speed-presets {
+    display: flex;
+    gap: 4px;
+}
+
+.speed-preset {
+    padding: 4px 8px;
+    font-size: 11px;
+    background: var(--btn-bg);
+    border: none;
+    border-radius: 4px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.speed-preset:hover {
+    background: var(--btn-hover);
+    color: var(--text-primary);
+}
+
+.speed-preset.active {
+    background: var(--accent-gold);
+    color: var(--control-bg-solid);
+    font-weight: 600;
+}
+
+/* Time Display */
+.time-display {
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-family: 'Consolas', 'Monaco', monospace;
+}
+
+.time-current {
+    color: var(--text-primary);
+}
+
+.time-separator {
+    margin: 0 4px;
+    color: var(--text-muted);
+}
+
+.time-total {
+    color: var(--text-muted);
+}
+
+/* -----------------------------------------------------------------------------
+   Responsive Styles
+   ----------------------------------------------------------------------------- */
+
+/* Tablet */
+@media (max-width: 1024px) {
+    .controls-left,
+    .controls-right {
+        min-width: 140px;
+    }
+
+    .speed-slider {
+        width: 80px;
+    }
+
+    .turn-value {
+        font-size: 16px;
+    }
+
+    .phase-value {
+        font-size: 13px;
+    }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    .control-bar {
+        height: var(--control-height-mobile);
+    }
+
+    .controls-main {
+        flex-wrap: wrap;
+        padding: 8px 12px;
+        gap: 8px;
+    }
+
+    .controls-left {
+        order: 2;
+        min-width: auto;
+        flex: 1;
+    }
+
+    .controls-center {
+        order: 1;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .controls-right {
+        order: 3;
+        min-width: auto;
+        flex: 1;
+        justify-content: flex-end;
+    }
+
+    .control-btn-lg {
+        width: 48px;
+        height: 48px;
+        font-size: 20px;
+    }
+
+    .control-btn-md {
+        width: 36px;
+        height: 36px;
+    }
+
+    .control-btn-sm {
+        width: 32px;
+        height: 32px;
+    }
+
+    .speed-slider {
+        width: 60px;
+    }
+
+    .speed-presets {
+        display: none;
+    }
+
+    .display-divider {
+        display: none;
+    }
+
+    .turn-display,
+    .phase-display {
+        flex-direction: row;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .turn-label,
+    .phase-label {
+        font-size: 9px;
+    }
+
+    .turn-value {
+        font-size: 14px;
+    }
+
+    .phase-value {
+        font-size: 12px;
+    }
+}
+
+/* Small Mobile */
+@media (max-width: 480px) {
+    .control-bar {
+        height: 140px;
+    }
+
+    .controls-main {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 6px;
+    }
+
+    .controls-left,
+    .controls-center,
+    .controls-right {
+        width: 100%;
+        justify-content: center;
+        order: unset;
+    }
+
+    .controls-left {
+        justify-content: space-around;
+    }
+
+    .controls-right {
+        justify-content: center;
+    }
+
+    .speed-control {
+        justify-content: center;
+    }
+}
+
+/* -----------------------------------------------------------------------------
+   Animation & Transitions
+   ----------------------------------------------------------------------------- */
+
+/* Pulse animation for active playback */
+@keyframes pulse-glow {
+    0%, 100% {
+        box-shadow: 0 4px 12px var(--accent-glow);
+    }
+    50% {
+        box-shadow: 0 4px 20px var(--accent-glow), 0 0 30px var(--accent-glow);
+    }
+}
+
+.control-btn-lg.playing {
+    animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Fade in animation */
+@keyframes fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.control-bar {
+    animation: fade-in 0.3s ease-out;
+}
+
+/* -----------------------------------------------------------------------------
+   Utility Classes
+   ----------------------------------------------------------------------------- */
+
+.hidden {
+    display: none !important;
+}
+
+.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+    cursor: not-allowed;
+}
+
+/* Keyboard focus styles */
+.control-btn:focus-visible,
+.speed-slider:focus-visible,
+.speed-preset:focus-visible {
+    outline: 2px solid var(--accent-gold);
+    outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .control-bar {
+        background: #000000;
+        border-top: 2px solid var(--accent-gold);
+    }
+
+    .control-btn {
+        border: 1px solid var(--text-primary);
+    }
+
+    .timeline-wrapper {
+        border: 1px solid var(--text-primary);
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .control-btn,
+    .timeline-marker,
+    .timeline-wrapper,
+    .speed-slider::-webkit-slider-thumb,
+    .speed-slider::-moz-range-thumb {
+        transition: none;
+    }
+
+    .control-btn-lg.playing {
+        animation: none;
+    }
+
+    .control-bar {
+        animation: none;
+    }
+}

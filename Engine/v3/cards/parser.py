@@ -21,7 +21,8 @@ from pathlib import Path
 from typing import List, Dict, Tuple, Optional, Callable, TYPE_CHECKING
 from dataclasses import dataclass, field
 
-from ..engine.objects import Card, Characteristics, ManaCost
+from ..engine.objects import Card, Characteristics
+from ..engine.mana import ManaCost
 from ..engine.types import CardType
 from .database import get_database, CardDatabase, CardData
 
@@ -520,7 +521,7 @@ class Deck:
         next_id = 1
 
         for entry in decklist.entries:
-            card_data = database.get_card(entry.card_name)
+            card_data = database.get(entry.card_name)
 
             # Create placeholder if not in database
             if card_data is None:
@@ -580,8 +581,8 @@ class Deck:
     def _create_card_from_data(data: CardData, card_id: int) -> Card:
         """Create a Card object from CardData."""
         # Parse mana cost if present
-        if data.mana_cost_string:
-            mana_cost = ManaCost.parse(data.mana_cost_string)
+        if data.mana_cost:
+            mana_cost = ManaCost.parse(data.mana_cost)
         elif data.cmc > 0:
             # Create generic mana cost placeholder
             mana_cost = ManaCost.parse(f"{{{data.cmc}}}")
@@ -604,7 +605,7 @@ class Deck:
         card = Card(
             object_id=card_id,
             characteristics=chars,
-            printed_characteristics=chars.copy()
+            base_characteristics=chars.copy()
         )
 
         # Add keywords to cache

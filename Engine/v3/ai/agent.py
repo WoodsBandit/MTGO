@@ -209,10 +209,15 @@ def build_game_state(game: Any, player: Any) -> GameState:
     """Build a GameState view for a player from the game object."""
     import re
 
-    def get_cmc(cost_str):
-        """Parse mana cost string to get CMC."""
-        if not cost_str:
+    def get_cmc(cost):
+        """Parse mana cost to get CMC. Accepts string or ManaCost object."""
+        if not cost:
             return 0
+        # If it's a ManaCost object, use its cmc property
+        if hasattr(cost, 'cmc'):
+            return cost.cmc
+        # If it's a string, parse it
+        cost_str = str(cost)
         total = 0
         for m in re.findall(r'\{(\d+)\}', cost_str):
             total += int(m)
@@ -229,11 +234,16 @@ def build_game_state(game: Any, player: Any) -> GameState:
         subtypes = list(chars.subtypes) if hasattr(chars, 'subtypes') else []
         keywords = list(chars.keywords) if hasattr(chars, 'keywords') else []
 
+        # Handle mana_cost - convert to string if it's a ManaCost object
+        mana_cost = ""
+        if hasattr(chars, 'mana_cost') and chars.mana_cost:
+            mana_cost = str(chars.mana_cost) if not isinstance(chars.mana_cost, str) else chars.mana_cost
+
         return CardInfo(
             name=chars.name if hasattr(chars, 'name') else str(card),
             card_types=types,
             subtypes=[str(s) for s in subtypes],
-            mana_cost=chars.mana_cost if hasattr(chars, 'mana_cost') else "",
+            mana_cost=mana_cost,
             cmc=get_cmc(chars.mana_cost) if hasattr(chars, 'mana_cost') else 0,
             power=chars.power if hasattr(chars, 'power') else None,
             toughness=chars.toughness if hasattr(chars, 'toughness') else None,

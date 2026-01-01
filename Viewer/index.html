@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MTG Game Viewer</title>
+    <link rel="stylesheet" href="css/playmat.css">
+    <link rel="stylesheet" href="css/controls.css">
+</head>
+<body>
+    <div id="game-viewer">
+        <!-- Player 2 Zone (Top - Mirrored) -->
+        <div id="player2-zone" class="player-zone mirrored">
+            <div class="player-info">
+                <span class="player-name" data-player="2">Player 2</span>
+                <div class="life-total" data-player="2">
+                    <span class="life-label">Life:</span>
+                    <span class="life-value">20</span>
+                </div>
+            </div>
+
+            <div class="play-area">
+                <!-- Exile Zone -->
+                <div class="zone exile" data-player="2" data-zone="exile">
+                    <div class="zone-label">Exile</div>
+                    <div class="card-stack"></div>
+                </div>
+
+                <!-- Graveyard -->
+                <div class="zone graveyard" data-player="2" data-zone="graveyard">
+                    <div class="zone-label">Graveyard</div>
+                    <div class="card-stack"></div>
+                </div>
+
+                <!-- Library -->
+                <div class="zone library" data-player="2" data-zone="library">
+                    <div class="zone-label">Library</div>
+                    <div class="card-stack">
+                        <div class="card card-back" data-card-id="" data-face-down="true"></div>
+                    </div>
+                    <span class="card-count">0</span>
+                </div>
+
+                <!-- Battlefield - Main Area -->
+                <div class="battlefield" data-player="2">
+                    <!-- Lands Row -->
+                    <div class="zone lands" data-player="2" data-zone="lands">
+                        <div class="zone-label">Lands</div>
+                        <div class="card-row"></div>
+                    </div>
+
+                    <!-- Creatures/Other Permanents Row -->
+                    <div class="zone creatures" data-player="2" data-zone="creatures">
+                        <div class="zone-label">Creatures & Permanents</div>
+                        <div class="card-row"></div>
+                    </div>
+                </div>
+
+                <!-- Hand -->
+                <div class="zone hand" data-player="2" data-zone="hand">
+                    <div class="zone-label">Hand</div>
+                    <div class="card-row"></div>
+                    <span class="card-count">0</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Divider / Turn Indicator -->
+        <div id="game-divider">
+            <div class="turn-indicator">
+                <span class="active-player" data-active-player="1">Player 1's Turn</span>
+            </div>
+        </div>
+
+        <!-- Player 1 Zone (Bottom) -->
+        <div id="player1-zone" class="player-zone">
+            <div class="player-info">
+                <span class="player-name" data-player="1">Player 1</span>
+                <div class="life-total" data-player="1">
+                    <span class="life-label">Life:</span>
+                    <span class="life-value">20</span>
+                </div>
+            </div>
+
+            <div class="play-area">
+                <!-- Hand -->
+                <div class="zone hand" data-player="1" data-zone="hand">
+                    <div class="zone-label">Hand</div>
+                    <div class="card-row"></div>
+                    <span class="card-count">0</span>
+                </div>
+
+                <!-- Battlefield - Main Area -->
+                <div class="battlefield" data-player="1">
+                    <!-- Creatures/Other Permanents Row -->
+                    <div class="zone creatures" data-player="1" data-zone="creatures">
+                        <div class="zone-label">Creatures & Permanents</div>
+                        <div class="card-row"></div>
+                    </div>
+
+                    <!-- Lands Row -->
+                    <div class="zone lands" data-player="1" data-zone="lands">
+                        <div class="zone-label">Lands</div>
+                        <div class="card-row"></div>
+                    </div>
+                </div>
+
+                <!-- Library -->
+                <div class="zone library" data-player="1" data-zone="library">
+                    <div class="zone-label">Library</div>
+                    <div class="card-stack">
+                        <div class="card card-back" data-card-id="" data-face-down="true"></div>
+                    </div>
+                    <span class="card-count">0</span>
+                </div>
+
+                <!-- Graveyard -->
+                <div class="zone graveyard" data-player="1" data-zone="graveyard">
+                    <div class="zone-label">Graveyard</div>
+                    <div class="card-stack"></div>
+                </div>
+
+                <!-- Exile Zone -->
+                <div class="zone exile" data-player="1" data-zone="exile">
+                    <div class="zone-label">Exile</div>
+                    <div class="card-stack"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Timeline Scrubber -->
+        <div id="timeline-container">
+            <div id="timeline-scrubber">
+                <div class="timeline-track">
+                    <div class="timeline-progress"></div>
+                    <div class="timeline-handle"></div>
+                </div>
+                <div class="timeline-markers"></div>
+            </div>
+            <div class="timeline-info">
+                <span class="current-action">Ready</span>
+            </div>
+        </div>
+
+        <!-- Control Bar -->
+        <div id="control-bar">
+            <div class="controls-left">
+                <button id="btn-rewind" class="control-btn" title="Rewind to Start">
+                    <span class="icon">&#9198;</span>
+                </button>
+                <button id="btn-step-back" class="control-btn" title="Step Back">
+                    <span class="icon">&#9664;</span>
+                </button>
+                <button id="btn-play-pause" class="control-btn" title="Play/Pause">
+                    <span class="icon play-icon">&#9654;</span>
+                    <span class="icon pause-icon" style="display: none;">&#9208;</span>
+                </button>
+                <button id="btn-step-forward" class="control-btn" title="Step Forward">
+                    <span class="icon">&#9654;</span>
+                </button>
+                <button id="btn-fast-forward" class="control-btn" title="Fast Forward to End">
+                    <span class="icon">&#9197;</span>
+                </button>
+            </div>
+
+            <div class="controls-center">
+                <div class="turn-counter">
+                    <span class="label">Turn:</span>
+                    <span id="turn-number">1</span>
+                </div>
+                <div class="phase-display">
+                    <span class="label">Phase:</span>
+                    <span id="current-phase">Untap</span>
+                </div>
+            </div>
+
+            <div class="controls-right">
+                <div class="speed-control">
+                    <label for="speed-slider">Speed:</label>
+                    <input type="range" id="speed-slider" min="0.5" max="4" step="0.5" value="1">
+                    <span id="speed-value">1x</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card Preview Tooltip -->
+    <div id="card-preview" class="hidden">
+        <img src="" alt="Card Preview" class="preview-image">
+        <div class="preview-info">
+            <span class="card-name"></span>
+            <span class="card-type"></span>
+            <span class="card-text"></span>
+        </div>
+    </div>
+
+    <!-- Scripts (loaded in dependency order) -->
+    <script src="js/game-state.js"></script>
+    <script src="js/scryfall.js"></script>
+    <script src="js/playmat.js"></script>
+    <script src="js/controls.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

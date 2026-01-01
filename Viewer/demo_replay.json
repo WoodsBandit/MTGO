@@ -1,0 +1,1611 @@
+{
+  "metadata": {
+    "date": "2026-01-01T03:49:40.438460",
+    "engineVersion": "V3",
+    "deck1": "Mono_Red_Aggro_Meta",
+    "deck2": "Izzet_Lessons_Meta",
+    "winner": 1,
+    "turnsPlayed": 0,
+    "winReason": "turn_limit"
+  },
+  "frames": [
+    {
+      "frame_id": 0,
+      "turn": 0,
+      "phase": "beginning",
+      "activePlayer": 1,
+      "timestamp": "2026-01-01T03:49:40.438694",
+      "players": {
+        "1": {
+          "life": 20,
+          "hand": [
+            {
+              "id": "2",
+              "name": "Hired Claw",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "55",
+              "name": "Mountain",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "23",
+              "name": "Ojer Axonil, Deepest Might",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "50",
+              "name": "Mountain",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "15",
+              "name": "Razorkin Needlehead",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "13",
+              "name": "Razorkin Needlehead",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "32",
+              "name": "Lightning Strike",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            }
+          ],
+          "battlefield": {
+            "lands": [],
+            "creatures": [],
+            "artifacts": [],
+            "enchantments": [],
+            "planeswalkers": [],
+            "other": []
+          },
+          "library": 53,
+          "graveyard": [],
+          "exile": [],
+          "manaPool": {
+            "W": 0,
+            "U": 0,
+            "B": 0,
+            "R": 0,
+            "G": 0,
+            "C": 0
+          },
+          "poisonCounters": 0
+        },
+        "2": {
+          "life": 20,
+          "hand": [
+            {
+              "id": "110",
+              "name": "Riverpyre Verge",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "83",
+              "name": "Artist's Talent",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "105",
+              "name": "Island",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "111",
+              "name": "Riverpyre Verge",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "73",
+              "name": "Combustion Technique",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "77",
+              "name": "Firebending Lesson",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "109",
+              "name": "Multiversal Passage",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            }
+          ],
+          "battlefield": {
+            "lands": [],
+            "creatures": [],
+            "artifacts": [],
+            "enchantments": [],
+            "planeswalkers": [],
+            "other": []
+          },
+          "library": 53,
+          "graveyard": [],
+          "exile": [],
+          "manaPool": {
+            "W": 0,
+            "U": 0,
+            "B": 0,
+            "R": 0,
+            "G": 0,
+            "C": 0
+          },
+          "poisonCounters": 0
+        }
+      },
+      "action": {
+        "type": "game_start",
+        "player": 0,
+        "description": "Game begins",
+        "details": {
+          "message": "Game begins"
+        }
+      }
+    },
+    {
+      "frame_id": 1,
+      "turn": 50,
+      "phase": "ending",
+      "activePlayer": 1,
+      "timestamp": "2026-01-01T03:49:40.636170",
+      "players": {
+        "1": {
+          "life": 20,
+          "hand": [
+            {
+              "id": "11",
+              "name": "Emberheart Challenger",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "14",
+              "name": "Razorkin Needlehead",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "4",
+              "name": "Hired Claw",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "33",
+              "name": "Full Bore",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "48",
+              "name": "Mountain",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "30",
+              "name": "Lightning Strike",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "53",
+              "name": "Mountain",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            }
+          ],
+          "battlefield": {
+            "lands": [],
+            "creatures": [],
+            "artifacts": [],
+            "enchantments": [],
+            "planeswalkers": [],
+            "other": []
+          },
+          "library": 29,
+          "graveyard": [
+            {
+              "id": "2",
+              "name": "Hired Claw",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "55",
+              "name": "Mountain",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "23",
+              "name": "Ojer Axonil, Deepest Might",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "50",
+              "name": "Mountain",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "15",
+              "name": "Razorkin Needlehead",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "13",
+              "name": "Razorkin Needlehead",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "32",
+              "name": "Lightning Strike",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "40",
+              "name": "Mountain",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "24",
+              "name": "Ojer Axonil, Deepest Might",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "25",
+              "name": "Burst Lightning",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "49",
+              "name": "Mountain",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "19",
+              "name": "Slickshot Show-Off",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "28",
+              "name": "Burst Lightning",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "29",
+              "name": "Lightning Strike",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "59",
+              "name": "Rockface Village",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "47",
+              "name": "Mountain",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "21",
+              "name": "Tersa Lightshatter",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "56",
+              "name": "Mountain",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "26",
+              "name": "Burst Lightning",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "10",
+              "name": "Emberheart Challenger",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "42",
+              "name": "Mountain",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "1",
+              "name": "Hired Claw",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "20",
+              "name": "Slickshot Show-Off",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "16",
+              "name": "Razorkin Needlehead",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            }
+          ],
+          "exile": [],
+          "manaPool": {
+            "W": 0,
+            "U": 0,
+            "B": 0,
+            "R": 0,
+            "G": 0,
+            "C": 0
+          },
+          "poisonCounters": 0
+        },
+        "2": {
+          "life": 20,
+          "hand": [
+            {
+              "id": "79",
+              "name": "Firebending Lesson",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "66",
+              "name": "Monument to Endurance",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "62",
+              "name": "Gran-Gran",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "112",
+              "name": "Riverpyre Verge",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "64",
+              "name": "Gran-Gran",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "85",
+              "name": "Stormchaser's Talent",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "69",
+              "name": "Accumulate Wisdom",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            }
+          ],
+          "battlefield": {
+            "lands": [],
+            "creatures": [],
+            "artifacts": [],
+            "enchantments": [],
+            "planeswalkers": [],
+            "other": []
+          },
+          "library": 28,
+          "graveyard": [
+            {
+              "id": "110",
+              "name": "Riverpyre Verge",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "83",
+              "name": "Artist's Talent",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "105",
+              "name": "Island",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "111",
+              "name": "Riverpyre Verge",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "73",
+              "name": "Combustion Technique",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "77",
+              "name": "Firebending Lesson",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "109",
+              "name": "Multiversal Passage",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "61",
+              "name": "Gran-Gran",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "74",
+              "name": "Combustion Technique",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "89",
+              "name": "Boomerang Basics",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "114",
+              "name": "Spirebluff Canal",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "80",
+              "name": "Firebending Lesson",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "97",
+              "name": "Iroh's Demonstration",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "100",
+              "name": "Island",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "117",
+              "name": "Spirebluff Canal",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "101",
+              "name": "Island",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "99",
+              "name": "Island",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "94",
+              "name": "Abandon Attachments",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "113",
+              "name": "Riverpyre Verge",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "93",
+              "name": "Abandon Attachments",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "75",
+              "name": "Combustion Technique",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "96",
+              "name": "Iroh's Demonstration",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "98",
+              "name": "It'll Quench Ya!",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "78",
+              "name": "Firebending Lesson",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "103",
+              "name": "Island",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            }
+          ],
+          "exile": [],
+          "manaPool": {
+            "W": 0,
+            "U": 0,
+            "B": 0,
+            "R": 0,
+            "G": 0,
+            "C": 0
+          },
+          "poisonCounters": 0
+        }
+      },
+      "action": {
+        "type": "game_end",
+        "player": 1,
+        "description": "Game over - Player 1 wins!",
+        "details": {
+          "winner": 1,
+          "reason": "turn_limit"
+        }
+      }
+    },
+    {
+      "frame_id": 2,
+      "turn": 50,
+      "phase": "ending",
+      "activePlayer": 1,
+      "timestamp": "2026-01-01T03:49:40.636339",
+      "players": {
+        "1": {
+          "life": 20,
+          "hand": [
+            {
+              "id": "11",
+              "name": "Emberheart Challenger",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "14",
+              "name": "Razorkin Needlehead",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "4",
+              "name": "Hired Claw",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "33",
+              "name": "Full Bore",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "48",
+              "name": "Mountain",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "30",
+              "name": "Lightning Strike",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "53",
+              "name": "Mountain",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            }
+          ],
+          "battlefield": {
+            "lands": [],
+            "creatures": [],
+            "artifacts": [],
+            "enchantments": [],
+            "planeswalkers": [],
+            "other": []
+          },
+          "library": 29,
+          "graveyard": [
+            {
+              "id": "2",
+              "name": "Hired Claw",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "55",
+              "name": "Mountain",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "23",
+              "name": "Ojer Axonil, Deepest Might",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "50",
+              "name": "Mountain",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "15",
+              "name": "Razorkin Needlehead",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "13",
+              "name": "Razorkin Needlehead",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "32",
+              "name": "Lightning Strike",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "40",
+              "name": "Mountain",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "24",
+              "name": "Ojer Axonil, Deepest Might",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "25",
+              "name": "Burst Lightning",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "49",
+              "name": "Mountain",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "19",
+              "name": "Slickshot Show-Off",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "28",
+              "name": "Burst Lightning",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "29",
+              "name": "Lightning Strike",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "59",
+              "name": "Rockface Village",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "47",
+              "name": "Mountain",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "21",
+              "name": "Tersa Lightshatter",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "56",
+              "name": "Mountain",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "26",
+              "name": "Burst Lightning",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "10",
+              "name": "Emberheart Challenger",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "42",
+              "name": "Mountain",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "1",
+              "name": "Hired Claw",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "20",
+              "name": "Slickshot Show-Off",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "16",
+              "name": "Razorkin Needlehead",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            }
+          ],
+          "exile": [],
+          "manaPool": {
+            "W": 0,
+            "U": 0,
+            "B": 0,
+            "R": 0,
+            "G": 0,
+            "C": 0
+          },
+          "poisonCounters": 0
+        },
+        "2": {
+          "life": 20,
+          "hand": [
+            {
+              "id": "79",
+              "name": "Firebending Lesson",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "66",
+              "name": "Monument to Endurance",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "62",
+              "name": "Gran-Gran",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "112",
+              "name": "Riverpyre Verge",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "64",
+              "name": "Gran-Gran",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "85",
+              "name": "Stormchaser's Talent",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "69",
+              "name": "Accumulate Wisdom",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            }
+          ],
+          "battlefield": {
+            "lands": [],
+            "creatures": [],
+            "artifacts": [],
+            "enchantments": [],
+            "planeswalkers": [],
+            "other": []
+          },
+          "library": 28,
+          "graveyard": [
+            {
+              "id": "110",
+              "name": "Riverpyre Verge",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "83",
+              "name": "Artist's Talent",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "105",
+              "name": "Island",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "111",
+              "name": "Riverpyre Verge",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "73",
+              "name": "Combustion Technique",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "77",
+              "name": "Firebending Lesson",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "109",
+              "name": "Multiversal Passage",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "61",
+              "name": "Gran-Gran",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "74",
+              "name": "Combustion Technique",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "89",
+              "name": "Boomerang Basics",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "114",
+              "name": "Spirebluff Canal",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "80",
+              "name": "Firebending Lesson",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "97",
+              "name": "Iroh's Demonstration",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "100",
+              "name": "Island",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "117",
+              "name": "Spirebluff Canal",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "101",
+              "name": "Island",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "99",
+              "name": "Island",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "94",
+              "name": "Abandon Attachments",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "113",
+              "name": "Riverpyre Verge",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "93",
+              "name": "Abandon Attachments",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "75",
+              "name": "Combustion Technique",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "96",
+              "name": "Iroh's Demonstration",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "98",
+              "name": "It'll Quench Ya!",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "78",
+              "name": "Firebending Lesson",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            },
+            {
+              "id": "103",
+              "name": "Island",
+              "power": 2,
+              "toughness": 2,
+              "manaCost": "{2}",
+              "types": [
+                "CREATURE"
+              ]
+            }
+          ],
+          "exile": [],
+          "manaPool": {
+            "W": 0,
+            "U": 0,
+            "B": 0,
+            "R": 0,
+            "G": 0,
+            "C": 0
+          },
+          "poisonCounters": 0
+        }
+      }
+    }
+  ]
+}

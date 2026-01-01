@@ -1,0 +1,618 @@
+/* ==========================================================================
+   MTG Playmat Layout - CSS Grid Based Design
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   CSS Variables & Root Configuration
+   -------------------------------------------------------------------------- */
+:root {
+    /* Card dimensions (standard MTG ratio 2.5" x 3.5" scaled) */
+    --card-width: 63px;
+    --card-height: 88px;
+    --card-border-radius: 5px;
+
+    /* Colors */
+    --playmat-bg: #1a472a;
+    --playmat-felt: radial-gradient(ellipse at center, #1e5631 0%, #1a472a 50%, #0f2d1a 100%);
+    --zone-border: rgba(255, 255, 255, 0.15);
+    --zone-bg: rgba(0, 0, 0, 0.2);
+    --zone-label-color: rgba(255, 255, 255, 0.6);
+    --card-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    --card-shadow-hover: 0 8px 16px rgba(0, 0, 0, 0.4);
+
+    /* Spacing */
+    --zone-padding: 10px;
+    --zone-gap: 8px;
+    --hand-card-overlap: -35px;
+    --stack-offset: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   Playmat Container
+   -------------------------------------------------------------------------- */
+.playmat {
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    width: 100%;
+    height: 100vh;
+    min-height: 700px;
+    background: var(--playmat-felt);
+    background-color: var(--playmat-bg);
+    padding: 10px;
+    box-sizing: border-box;
+    gap: 10px;
+    overflow: hidden;
+}
+
+/* Felt texture overlay */
+.playmat::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    opacity: 0.03;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Player Zones
+   -------------------------------------------------------------------------- */
+.player-zone {
+    display: grid;
+    grid-template-columns: auto 1fr auto auto;
+    grid-template-rows: auto 1fr;
+    grid-template-areas:
+        "library battlefield battlefield exile"
+        "library hand graveyard graveyard";
+    gap: var(--zone-gap);
+    padding: var(--zone-padding);
+    position: relative;
+    z-index: 1;
+}
+
+/* Player 2 zone (top - rotated 180 degrees) */
+.player-zone.player-2 {
+    transform: rotate(180deg);
+    grid-template-areas:
+        "library battlefield battlefield exile"
+        "library hand graveyard graveyard";
+}
+
+/* Player 1 zone (bottom - normal orientation) */
+.player-zone.player-1 {
+    grid-template-areas:
+        "library battlefield battlefield exile"
+        "library hand graveyard graveyard";
+}
+
+/* --------------------------------------------------------------------------
+   Zone Base Styles
+   -------------------------------------------------------------------------- */
+.zone {
+    background: var(--zone-bg);
+    border: 1px solid var(--zone-border);
+    border-radius: 8px;
+    padding: var(--zone-padding);
+    position: relative;
+    min-height: calc(var(--card-height) + 30px);
+}
+
+.zone-label {
+    position: absolute;
+    top: 5px;
+    left: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--zone-label-color);
+    pointer-events: none;
+    z-index: 10;
+}
+
+/* Rotated labels for Player 2 */
+.player-zone.player-2 .zone-label {
+    transform: rotate(180deg);
+    top: auto;
+    bottom: 5px;
+    left: auto;
+    right: 10px;
+}
+
+/* --------------------------------------------------------------------------
+   Library (Deck) Zone
+   -------------------------------------------------------------------------- */
+.library {
+    grid-area: library;
+    width: calc(var(--card-width) + 20px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.library-stack {
+    position: relative;
+    width: var(--card-width);
+    height: var(--card-height);
+}
+
+/* Stacked deck visual effect */
+.library-stack::before,
+.library-stack::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #2a1a4a 0%, #1a0a2a 100%);
+    border-radius: var(--card-border-radius);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.library-stack::before {
+    top: calc(var(--stack-offset) * 2);
+    left: calc(var(--stack-offset) * 2);
+    z-index: 1;
+}
+
+.library-stack::after {
+    top: var(--stack-offset);
+    left: var(--stack-offset);
+    z-index: 2;
+}
+
+.library-stack .card {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 3;
+}
+
+.library-count {
+    margin-top: 8px;
+    font-size: 12px;
+    font-weight: bold;
+    color: var(--zone-label-color);
+    text-align: center;
+}
+
+/* --------------------------------------------------------------------------
+   Hand Zone
+   -------------------------------------------------------------------------- */
+.hand {
+    grid-area: hand;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: visible;
+    min-width: 200px;
+}
+
+.hand-cards {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 20px;
+}
+
+.hand-cards .card {
+    margin-right: var(--hand-card-overlap);
+    transition: transform 0.2s ease, z-index 0s;
+    cursor: pointer;
+}
+
+.hand-cards .card:last-child {
+    margin-right: 0;
+}
+
+.hand-cards .card:hover {
+    transform: translateY(-15px) scale(1.1);
+    z-index: 100;
+}
+
+/* Fan effect for hand cards */
+.hand-cards .card:nth-child(1) { transform: rotate(-6deg); }
+.hand-cards .card:nth-child(2) { transform: rotate(-4deg); }
+.hand-cards .card:nth-child(3) { transform: rotate(-2deg); }
+.hand-cards .card:nth-child(4) { transform: rotate(0deg); }
+.hand-cards .card:nth-child(5) { transform: rotate(2deg); }
+.hand-cards .card:nth-child(6) { transform: rotate(4deg); }
+.hand-cards .card:nth-child(7) { transform: rotate(6deg); }
+
+.hand-cards .card:nth-child(1):hover { transform: rotate(-6deg) translateY(-15px) scale(1.1); }
+.hand-cards .card:nth-child(2):hover { transform: rotate(-4deg) translateY(-15px) scale(1.1); }
+.hand-cards .card:nth-child(3):hover { transform: rotate(-2deg) translateY(-15px) scale(1.1); }
+.hand-cards .card:nth-child(4):hover { transform: rotate(0deg) translateY(-15px) scale(1.1); }
+.hand-cards .card:nth-child(5):hover { transform: rotate(2deg) translateY(-15px) scale(1.1); }
+.hand-cards .card:nth-child(6):hover { transform: rotate(4deg) translateY(-15px) scale(1.1); }
+.hand-cards .card:nth-child(7):hover { transform: rotate(6deg) translateY(-15px) scale(1.1); }
+
+/* --------------------------------------------------------------------------
+   Battlefield Zone
+   -------------------------------------------------------------------------- */
+.battlefield {
+    grid-area: battlefield;
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    grid-template-areas:
+        "creatures"
+        "lands";
+    gap: 5px;
+    min-height: 200px;
+}
+
+/* Player 2 battlefield order reversed visually */
+.player-zone.player-2 .battlefield {
+    grid-template-areas:
+        "lands"
+        "creatures";
+}
+
+.battlefield-section {
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    gap: 5px;
+    padding: 5px;
+    border-radius: 6px;
+    min-height: calc(var(--card-height) + 10px);
+}
+
+.battlefield-creatures {
+    grid-area: creatures;
+    background: rgba(139, 69, 19, 0.15);
+    border: 1px dashed rgba(139, 69, 19, 0.3);
+}
+
+.battlefield-lands {
+    grid-area: lands;
+    background: rgba(34, 139, 34, 0.15);
+    border: 1px dashed rgba(34, 139, 34, 0.3);
+}
+
+.battlefield-section .card {
+    flex-shrink: 0;
+}
+
+/* Tapped cards */
+.battlefield-section .card.tapped {
+    transform: rotate(90deg);
+    margin: calc((var(--card-height) - var(--card-width)) / 2);
+}
+
+/* --------------------------------------------------------------------------
+   Graveyard Zone
+   -------------------------------------------------------------------------- */
+.graveyard {
+    grid-area: graveyard;
+    width: calc(var(--card-width) + 40px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.graveyard-stack {
+    position: relative;
+    width: var(--card-width);
+    height: var(--card-height);
+}
+
+.graveyard-stack .card {
+    position: absolute;
+    cursor: pointer;
+}
+
+/* Offset effect to show graveyard depth */
+.graveyard-stack .card:nth-child(1) { top: 0; left: 0; }
+.graveyard-stack .card:nth-child(2) { top: 3px; left: 3px; }
+.graveyard-stack .card:nth-child(3) { top: 6px; left: 6px; }
+.graveyard-stack .card:nth-child(4) { top: 9px; left: 9px; }
+.graveyard-stack .card:nth-child(5) { top: 12px; left: 12px; }
+
+/* Fan out graveyard on hover */
+.graveyard:hover .graveyard-stack .card:nth-child(1) { transform: translateX(-60px); }
+.graveyard:hover .graveyard-stack .card:nth-child(2) { transform: translateX(-30px); }
+.graveyard:hover .graveyard-stack .card:nth-child(3) { transform: translateX(0); }
+.graveyard:hover .graveyard-stack .card:nth-child(4) { transform: translateX(30px); }
+.graveyard:hover .graveyard-stack .card:nth-child(5) { transform: translateX(60px); }
+
+.graveyard-count {
+    margin-top: 8px;
+    font-size: 12px;
+    font-weight: bold;
+    color: var(--zone-label-color);
+    text-align: center;
+}
+
+/* --------------------------------------------------------------------------
+   Exile Zone
+   -------------------------------------------------------------------------- */
+.exile {
+    grid-area: exile;
+    width: calc(var(--card-width) + 20px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(128, 0, 128, 0.1);
+    border-color: rgba(128, 0, 128, 0.3);
+}
+
+.exile-stack {
+    position: relative;
+    width: var(--card-width);
+    height: var(--card-height);
+}
+
+.exile-stack .card {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0.8;
+}
+
+/* Offset effect for exile */
+.exile-stack .card:nth-child(n+2) {
+    top: calc(var(--stack-offset) * var(--n, 1));
+    left: calc(var(--stack-offset) * var(--n, 1));
+}
+
+.exile-stack .card:nth-child(2) { --n: 1; }
+.exile-stack .card:nth-child(3) { --n: 2; }
+.exile-stack .card:nth-child(4) { --n: 3; }
+.exile-stack .card:nth-child(5) { --n: 4; }
+
+.exile-count {
+    margin-top: 8px;
+    font-size: 12px;
+    font-weight: bold;
+    color: var(--zone-label-color);
+    text-align: center;
+}
+
+/* --------------------------------------------------------------------------
+   Card Base Styles
+   -------------------------------------------------------------------------- */
+.card {
+    width: var(--card-width);
+    height: var(--card-height);
+    background: linear-gradient(135deg, #3a3a3a 0%, #1a1a1a 100%);
+    border-radius: var(--card-border-radius);
+    box-shadow: var(--card-shadow);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    position: relative;
+    cursor: pointer;
+}
+
+.card:hover {
+    transform: scale(1.05);
+    box-shadow: var(--card-shadow-hover);
+    z-index: 50;
+}
+
+.card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: var(--card-border-radius);
+}
+
+/* Card face down (back) */
+.card.face-down {
+    background: linear-gradient(135deg, #2a1a4a 0%, #1a0a2a 100%);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 140'%3E%3Crect fill='%231a0a2a' width='100' height='140'/%3E%3Cellipse cx='50' cy='70' rx='35' ry='50' fill='none' stroke='%234a2a6a' stroke-width='2'/%3E%3C/svg%3E");
+    background-size: cover;
+}
+
+/* Card placeholder/empty slot */
+.card-slot {
+    width: var(--card-width);
+    height: var(--card-height);
+    border: 2px dashed rgba(255, 255, 255, 0.2);
+    border-radius: var(--card-border-radius);
+    background: rgba(0, 0, 0, 0.1);
+}
+
+/* --------------------------------------------------------------------------
+   Counter/Token Overlays
+   -------------------------------------------------------------------------- */
+.card-counter {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 10px;
+    min-width: 20px;
+    text-align: center;
+}
+
+.card-counter.power-toughness {
+    background: rgba(139, 69, 19, 0.9);
+}
+
+.card-counter.loyalty {
+    background: rgba(70, 130, 180, 0.9);
+}
+
+/* --------------------------------------------------------------------------
+   Player Info Area
+   -------------------------------------------------------------------------- */
+.player-info {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 8px 20px;
+    border-radius: 20px;
+    z-index: 100;
+}
+
+.player-zone.player-2 .player-info {
+    transform: translateX(-50%) rotate(180deg);
+    top: 10px;
+    bottom: auto;
+}
+
+.player-name {
+    font-size: 14px;
+    font-weight: bold;
+    color: white;
+}
+
+.life-total {
+    font-size: 24px;
+    font-weight: bold;
+    color: #4ade80;
+    min-width: 40px;
+    text-align: center;
+}
+
+.life-total.low {
+    color: #f87171;
+}
+
+/* --------------------------------------------------------------------------
+   Responsive Adjustments
+   -------------------------------------------------------------------------- */
+@media (max-width: 1200px) {
+    :root {
+        --card-width: 50px;
+        --card-height: 70px;
+        --hand-card-overlap: -28px;
+    }
+
+    .zone-label {
+        font-size: 9px;
+    }
+}
+
+@media (max-width: 900px) {
+    :root {
+        --card-width: 40px;
+        --card-height: 56px;
+        --hand-card-overlap: -22px;
+    }
+
+    .player-zone {
+        grid-template-columns: auto 1fr auto;
+        grid-template-areas:
+            "library battlefield exile"
+            "hand hand graveyard";
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Animations
+   -------------------------------------------------------------------------- */
+@keyframes cardDraw {
+    from {
+        transform: translateY(-50px) rotate(-10deg);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0) rotate(0);
+        opacity: 1;
+    }
+}
+
+@keyframes cardPlay {
+    from {
+        transform: translateY(50px) scale(0.8);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes tapCard {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(90deg); }
+}
+
+@keyframes untapCard {
+    0% { transform: rotate(90deg); }
+    100% { transform: rotate(0deg); }
+}
+
+.card.animating-draw {
+    animation: cardDraw 0.3s ease-out;
+}
+
+.card.animating-play {
+    animation: cardPlay 0.3s ease-out;
+}
+
+.card.animating-tap {
+    animation: tapCard 0.2s ease-out forwards;
+}
+
+.card.animating-untap {
+    animation: untapCard 0.2s ease-out forwards;
+}
+
+/* --------------------------------------------------------------------------
+   Drag and Drop States
+   -------------------------------------------------------------------------- */
+.card.dragging {
+    opacity: 0.5;
+    transform: scale(1.1);
+    z-index: 1000;
+}
+
+.zone.drag-over {
+    background: rgba(74, 222, 128, 0.2);
+    border-color: rgba(74, 222, 128, 0.5);
+}
+
+.zone.drag-invalid {
+    background: rgba(248, 113, 113, 0.2);
+    border-color: rgba(248, 113, 113, 0.5);
+}
+
+/* --------------------------------------------------------------------------
+   Selection States
+   -------------------------------------------------------------------------- */
+.card.selected {
+    box-shadow: 0 0 0 3px #fbbf24, var(--card-shadow-hover);
+}
+
+.card.targetable {
+    box-shadow: 0 0 0 3px #60a5fa, var(--card-shadow);
+    cursor: crosshair;
+}
+
+.card.targeted {
+    box-shadow: 0 0 0 3px #f87171, var(--card-shadow-hover);
+}
+
+/* --------------------------------------------------------------------------
+   Utility Classes
+   -------------------------------------------------------------------------- */
+.hidden {
+    display: none !important;
+}
+
+.invisible {
+    visibility: hidden;
+}
+
+.no-pointer {
+    pointer-events: none;
+}
