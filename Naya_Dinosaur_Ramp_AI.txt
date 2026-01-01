@@ -1,0 +1,36 @@
+Naya_Dinosaur_Ramp_AI
+
+// CREATURES (26)
+4 Llanowar Elves
+4 Ixalli's Lorekeeper
+4 Pugnacious Hammerskull
+4 Hulking Raptor
+4 Belligerent Yearling
+3 Trumpeting Carnosaur
+2 Palani's Hatcher
+1 Ghalta, Primal Hunger
+
+// SORCERIES (6)
+4 Triumphant Chomp
+2 Commune with Dinosaurs
+
+// INSTANTS (4)
+4 Snakeskin Veil
+
+// LANDS (24)
+4 Cavern of Souls
+4 Copperline Gorge
+4 Karplusan Forest
+4 Rockfall Vale
+2 Restless Ridgeline
+4 Forest
+2 Mountain
+
+Sideboard
+4 Rest in Peace
+3 Brotherhood's End
+3 Pick Your Poison
+2 Tranquil Frillback
+2 Obstinate Baloth
+1 Ghalta, Primal Hunger
+

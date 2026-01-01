@@ -1,0 +1,76 @@
+Gruul_Dinosaur_Uncounterable_AI
+
+// ===================================================================
+// ROGUE DECK DESIGNED TO ATTACK THE CURRENT STANDARD METAGAME
+// ===================================================================
+// 
+// META ANALYSIS (December 2024):
+// - Izzet Lessons is #1 (14%) - relies on counterspells and graveyards
+// - Dimir Midrange and Selesnya Landfall rising
+// - The meta is very spell/instant-heavy
+// - Almost no mainboard graveyard hate
+// - Red removal dominates (punishes mana dorks... but not 4+ toughness dinos)
+//
+// WHY THIS DECK:
+// 1. Cavern of Souls makes ALL dinosaurs uncounterable vs Izzet
+// 2. Pugnacious Hammerskull (3/6) and Hulking Raptor (7/7) dodge red removal
+// 3. Trumpeting Carnosaur provides Discovery value the meta forgot
+// 4. We go OVER Dimir's value engines with raw size
+// 5. Triumphant Chomp is premium removal nobody expects
+// 6. Nobody is prepared for turn 3-4 massive dinosaurs
+//
+// ARCHETYPE: Gruul Dinosaur Ramp (Tier 3 / Rogue)
+// ===================================================================
+
+// CREATURES (26)
+4 Llanowar Elves
+4 Ixalli's Lorekeeper
+4 Belligerent Yearling
+4 Pugnacious Hammerskull
+4 Hulking Raptor
+3 Trumpeting Carnosaur
+2 Palani's Hatcher
+1 Ghalta, Primal Hunger
+
+// SORCERIES (8)
+4 Triumphant Chomp
+4 Glimpse the Core
+
+// INSTANTS (4)
+4 Snakeskin Veil
+
+// LANDS (22)
+4 Cavern of Souls
+4 Copperline Gorge
+4 Karplusan Forest
+3 Rockfall Vale
+2 Restless Ridgeline
+3 Forest
+2 Mountain
+
+Sideboard
+4 Soul-Guide Lantern
+3 Brotherhood's End
+3 Pick Your Poison
+2 Tranquil Frillback
+2 Scavenging Ooze
+1 Ghalta, Primal Hunger
+
+// ===================================================================
+// KEY SYNERGIES:
+// - Cavern naming Dinosaur = uncounterable threats
+// - Ixalli's Lorekeeper ramps specifically for Dinos
+// - Belligerent Yearling gets huge when you follow with Hammerskull/Raptor
+// - Hulking Raptor ramps 2 mana when it attacks - accelerates to Carnosaur
+// - Triumphant Chomp is 2 mana "destroy target creature" with Hammerskull
+// - Snakeskin Veil protects your investment from spot removal
+//
+// MATCHUP NOTES:
+// vs Izzet Lessons: Favorable - they cannot counter your threats, 
+//    their red removal doesn't kill your big dinos
+// vs Dimir Midrange: Even - Go bigger than their value creatures
+// vs Mono-Red: Favorable - Your creatures block everything and outsize them
+// vs Selesnya Landfall: Even - Race scenario, Triumphant Chomp is key
+// vs Reanimator: Unfavorable G1, bring in Soul-Guide Lantern
+// ===================================================================
+

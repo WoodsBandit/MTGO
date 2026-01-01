@@ -1,0 +1,300 @@
+======================================================================
+TOURNAMENT RESULTS
+======================================================================
+
+Generated: 2026-01-01 13:05:54
+Total time: 315.6 seconds (5.3 minutes)
+Games per matchup: 200
+
+----------------------------------------------------------------------
+OVERALL STANDINGS
+----------------------------------------------------------------------
+
+Rank  Deck                                W-L          Win%     Matchups  
+----------------------------------------------------------------------
+1     Deck 06 GruulMonsters               1516-284     84.2%   9-0       
+2     Deck 04 GreenStompy                 1372-428     76.2%   7-2       
+3     Deck 08 SimicRamp                   1363-437     75.7%   8-1       
+4     Deck 01 MonoRed Aggro               1009-791     56.1%   6-3       
+5     Deck 09 RakdosAggro                 937-863      52.1%   5-4       
+6     Deck 10 BorosAggro                  791-1009     43.9%   4-5       
+7     Deck 02 WhiteWeenie                 771-1029     42.8%   3-6       
+8     Deck 07 OrzhovMidrange              606-1194     33.7%   2-7       
+9     Deck 05 BlueTempo                   431-1369     23.9%   1-8       
+10    Deck 03 BlackControl                204-1596     11.3%   0-9       
+
+----------------------------------------------------------------------
+HEAD-TO-HEAD RESULTS
+----------------------------------------------------------------------
+
+Deck 01 MonoRed Aggro vs Deck 02 WhiteWeenie
+  Score: 118-82 (Draws: 0)
+  Winner: Deck 01 MonoRed Aggro
+  Deck 01 MonoRed Aggro as P1: 62 wins
+  Deck 02 WhiteWeenie as P1: 44 wins
+
+Deck 01 MonoRed Aggro vs Deck 03 BlackControl
+  Score: 190-10 (Draws: 0)
+  Winner: Deck 01 MonoRed Aggro
+  Deck 01 MonoRed Aggro as P1: 94 wins
+  Deck 03 BlackControl as P1: 4 wins
+
+Deck 01 MonoRed Aggro vs Deck 04 GreenStompy
+  Score: 32-168 (Draws: 0)
+  Winner: Deck 04 GreenStompy
+  Deck 01 MonoRed Aggro as P1: 16 wins
+  Deck 04 GreenStompy as P1: 84 wins
+
+Deck 01 MonoRed Aggro vs Deck 05 BlueTempo
+  Score: 157-43 (Draws: 0)
+  Winner: Deck 01 MonoRed Aggro
+  Deck 01 MonoRed Aggro as P1: 69 wins
+  Deck 05 BlueTempo as P1: 12 wins
+
+Deck 01 MonoRed Aggro vs Deck 06 GruulMonsters
+  Score: 41-159 (Draws: 0)
+  Winner: Deck 06 GruulMonsters
+  Deck 01 MonoRed Aggro as P1: 15 wins
+  Deck 06 GruulMonsters as P1: 74 wins
+
+Deck 01 MonoRed Aggro vs Deck 07 OrzhovMidrange
+  Score: 162-38 (Draws: 0)
+  Winner: Deck 01 MonoRed Aggro
+  Deck 01 MonoRed Aggro as P1: 82 wins
+  Deck 07 OrzhovMidrange as P1: 20 wins
+
+Deck 01 MonoRed Aggro vs Deck 08 SimicRamp
+  Score: 57-143 (Draws: 0)
+  Winner: Deck 08 SimicRamp
+  Deck 01 MonoRed Aggro as P1: 33 wins
+  Deck 08 SimicRamp as P1: 76 wins
+
+Deck 01 MonoRed Aggro vs Deck 09 RakdosAggro
+  Score: 112-88 (Draws: 0)
+  Winner: Deck 01 MonoRed Aggro
+  Deck 01 MonoRed Aggro as P1: 54 wins
+  Deck 09 RakdosAggro as P1: 42 wins
+
+Deck 01 MonoRed Aggro vs Deck 10 BorosAggro
+  Score: 140-60 (Draws: 0)
+  Winner: Deck 01 MonoRed Aggro
+  Deck 01 MonoRed Aggro as P1: 68 wins
+  Deck 10 BorosAggro as P1: 28 wins
+
+Deck 02 WhiteWeenie vs Deck 03 BlackControl
+  Score: 158-42 (Draws: 0)
+  Winner: Deck 02 WhiteWeenie
+  Deck 02 WhiteWeenie as P1: 77 wins
+  Deck 03 BlackControl as P1: 19 wins
+
+Deck 02 WhiteWeenie vs Deck 04 GreenStompy
+  Score: 37-163 (Draws: 0)
+  Winner: Deck 04 GreenStompy
+  Deck 02 WhiteWeenie as P1: 15 wins
+  Deck 04 GreenStompy as P1: 78 wins
+
+Deck 02 WhiteWeenie vs Deck 05 BlueTempo
+  Score: 134-66 (Draws: 0)
+  Winner: Deck 02 WhiteWeenie
+  Deck 02 WhiteWeenie as P1: 58 wins
+  Deck 05 BlueTempo as P1: 24 wins
+
+Deck 02 WhiteWeenie vs Deck 06 GruulMonsters
+  Score: 18-182 (Draws: 0)
+  Winner: Deck 06 GruulMonsters
+  Deck 02 WhiteWeenie as P1: 7 wins
+  Deck 06 GruulMonsters as P1: 89 wins
+
+Deck 02 WhiteWeenie vs Deck 07 OrzhovMidrange
+  Score: 118-82 (Draws: 0)
+  Winner: Deck 02 WhiteWeenie
+  Deck 02 WhiteWeenie as P1: 58 wins
+  Deck 07 OrzhovMidrange as P1: 40 wins
+
+Deck 02 WhiteWeenie vs Deck 08 SimicRamp
+  Score: 46-154 (Draws: 0)
+  Winner: Deck 08 SimicRamp
+  Deck 02 WhiteWeenie as P1: 25 wins
+  Deck 08 SimicRamp as P1: 79 wins
+
+Deck 02 WhiteWeenie vs Deck 09 RakdosAggro
+  Score: 89-111 (Draws: 0)
+  Winner: Deck 09 RakdosAggro
+  Deck 02 WhiteWeenie as P1: 36 wins
+  Deck 09 RakdosAggro as P1: 47 wins
+
+Deck 02 WhiteWeenie vs Deck 10 BorosAggro
+  Score: 89-111 (Draws: 0)
+  Winner: Deck 10 BorosAggro
+  Deck 02 WhiteWeenie as P1: 39 wins
+  Deck 10 BorosAggro as P1: 50 wins
+
+Deck 03 BlackControl vs Deck 04 GreenStompy
+  Score: 3-197 (Draws: 0)
+  Winner: Deck 04 GreenStompy
+  Deck 03 BlackControl as P1: 0 wins
+  Deck 04 GreenStompy as P1: 97 wins
+
+Deck 03 BlackControl vs Deck 05 BlueTempo
+  Score: 58-142 (Draws: 0)
+  Winner: Deck 05 BlueTempo
+  Deck 03 BlackControl as P1: 32 wins
+  Deck 05 BlueTempo as P1: 74 wins
+
+Deck 03 BlackControl vs Deck 06 GruulMonsters
+  Score: 10-190 (Draws: 0)
+  Winner: Deck 06 GruulMonsters
+  Deck 03 BlackControl as P1: 5 wins
+  Deck 06 GruulMonsters as P1: 95 wins
+
+Deck 03 BlackControl vs Deck 07 OrzhovMidrange
+  Score: 27-173 (Draws: 0)
+  Winner: Deck 07 OrzhovMidrange
+  Deck 03 BlackControl as P1: 12 wins
+  Deck 07 OrzhovMidrange as P1: 85 wins
+
+Deck 03 BlackControl vs Deck 08 SimicRamp
+  Score: 4-196 (Draws: 0)
+  Winner: Deck 08 SimicRamp
+  Deck 03 BlackControl as P1: 2 wins
+  Deck 08 SimicRamp as P1: 98 wins
+
+Deck 03 BlackControl vs Deck 09 RakdosAggro
+  Score: 15-185 (Draws: 0)
+  Winner: Deck 09 RakdosAggro
+  Deck 03 BlackControl as P1: 8 wins
+  Deck 09 RakdosAggro as P1: 93 wins
+
+Deck 03 BlackControl vs Deck 10 BorosAggro
+  Score: 35-165 (Draws: 0)
+  Winner: Deck 10 BorosAggro
+  Deck 03 BlackControl as P1: 14 wins
+  Deck 10 BorosAggro as P1: 79 wins
+
+Deck 04 GreenStompy vs Deck 05 BlueTempo
+  Score: 179-21 (Draws: 0)
+  Winner: Deck 04 GreenStompy
+  Deck 04 GreenStompy as P1: 91 wins
+  Deck 05 BlueTempo as P1: 12 wins
+
+Deck 04 GreenStompy vs Deck 06 GruulMonsters
+  Score: 48-152 (Draws: 0)
+  Winner: Deck 06 GruulMonsters
+  Deck 04 GreenStompy as P1: 18 wins
+  Deck 06 GruulMonsters as P1: 70 wins
+
+Deck 04 GreenStompy vs Deck 07 OrzhovMidrange
+  Score: 189-11 (Draws: 0)
+  Winner: Deck 04 GreenStompy
+  Deck 04 GreenStompy as P1: 93 wins
+  Deck 07 OrzhovMidrange as P1: 4 wins
+
+Deck 04 GreenStompy vs Deck 08 SimicRamp
+  Score: 58-142 (Draws: 0)
+  Winner: Deck 08 SimicRamp
+  Deck 04 GreenStompy as P1: 25 wins
+  Deck 08 SimicRamp as P1: 67 wins
+
+Deck 04 GreenStompy vs Deck 09 RakdosAggro
+  Score: 184-16 (Draws: 0)
+  Winner: Deck 04 GreenStompy
+  Deck 04 GreenStompy as P1: 92 wins
+  Deck 09 RakdosAggro as P1: 8 wins
+
+Deck 04 GreenStompy vs Deck 10 BorosAggro
+  Score: 186-14 (Draws: 0)
+  Winner: Deck 04 GreenStompy
+  Deck 04 GreenStompy as P1: 94 wins
+  Deck 10 BorosAggro as P1: 8 wins
+
+Deck 05 BlueTempo vs Deck 06 GruulMonsters
+  Score: 13-187 (Draws: 0)
+  Winner: Deck 06 GruulMonsters
+  Deck 05 BlueTempo as P1: 3 wins
+  Deck 06 GruulMonsters as P1: 90 wins
+
+Deck 05 BlueTempo vs Deck 07 OrzhovMidrange
+  Score: 73-127 (Draws: 0)
+  Winner: Deck 07 OrzhovMidrange
+  Deck 05 BlueTempo as P1: 29 wins
+  Deck 07 OrzhovMidrange as P1: 56 wins
+
+Deck 05 BlueTempo vs Deck 08 SimicRamp
+  Score: 18-182 (Draws: 0)
+  Winner: Deck 08 SimicRamp
+  Deck 05 BlueTempo as P1: 8 wins
+  Deck 08 SimicRamp as P1: 90 wins
+
+Deck 05 BlueTempo vs Deck 09 RakdosAggro
+  Score: 19-181 (Draws: 0)
+  Winner: Deck 09 RakdosAggro
+  Deck 05 BlueTempo as P1: 10 wins
+  Deck 09 RakdosAggro as P1: 91 wins
+
+Deck 05 BlueTempo vs Deck 10 BorosAggro
+  Score: 36-164 (Draws: 0)
+  Winner: Deck 10 BorosAggro
+  Deck 05 BlueTempo as P1: 18 wins
+  Deck 10 BorosAggro as P1: 82 wins
+
+Deck 06 GruulMonsters vs Deck 07 OrzhovMidrange
+  Score: 182-18 (Draws: 0)
+  Winner: Deck 06 GruulMonsters
+  Deck 06 GruulMonsters as P1: 89 wins
+  Deck 07 OrzhovMidrange as P1: 7 wins
+
+Deck 06 GruulMonsters vs Deck 08 SimicRamp
+  Score: 124-76 (Draws: 0)
+  Winner: Deck 06 GruulMonsters
+  Deck 06 GruulMonsters as P1: 58 wins
+  Deck 08 SimicRamp as P1: 34 wins
+
+Deck 06 GruulMonsters vs Deck 09 RakdosAggro
+  Score: 170-30 (Draws: 0)
+  Winner: Deck 06 GruulMonsters
+  Deck 06 GruulMonsters as P1: 86 wins
+  Deck 09 RakdosAggro as P1: 16 wins
+
+Deck 06 GruulMonsters vs Deck 10 BorosAggro
+  Score: 170-30 (Draws: 0)
+  Winner: Deck 06 GruulMonsters
+  Deck 06 GruulMonsters as P1: 86 wins
+  Deck 10 BorosAggro as P1: 16 wins
+
+Deck 07 OrzhovMidrange vs Deck 08 SimicRamp
+  Score: 29-171 (Draws: 0)
+  Winner: Deck 08 SimicRamp
+  Deck 07 OrzhovMidrange as P1: 14 wins
+  Deck 08 SimicRamp as P1: 85 wins
+
+Deck 07 OrzhovMidrange vs Deck 09 RakdosAggro
+  Score: 48-152 (Draws: 0)
+  Winner: Deck 09 RakdosAggro
+  Deck 07 OrzhovMidrange as P1: 27 wins
+  Deck 09 RakdosAggro as P1: 79 wins
+
+Deck 07 OrzhovMidrange vs Deck 10 BorosAggro
+  Score: 80-120 (Draws: 0)
+  Winner: Deck 10 BorosAggro
+  Deck 07 OrzhovMidrange as P1: 43 wins
+  Deck 10 BorosAggro as P1: 63 wins
+
+Deck 08 SimicRamp vs Deck 09 RakdosAggro
+  Score: 150-50 (Draws: 0)
+  Winner: Deck 08 SimicRamp
+  Deck 08 SimicRamp as P1: 72 wins
+  Deck 09 RakdosAggro as P1: 22 wins
+
+Deck 08 SimicRamp vs Deck 10 BorosAggro
+  Score: 149-51 (Draws: 0)
+  Winner: Deck 08 SimicRamp
+  Deck 08 SimicRamp as P1: 69 wins
+  Deck 10 BorosAggro as P1: 20 wins
+
+Deck 09 RakdosAggro vs Deck 10 BorosAggro
+  Score: 124-76 (Draws: 0)
+  Winner: Deck 09 RakdosAggro
+  Deck 09 RakdosAggro as P1: 61 wins
+  Deck 10 BorosAggro as P1: 37 wins
+
+======================================================================

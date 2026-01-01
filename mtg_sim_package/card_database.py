@@ -155,7 +155,7 @@ CARD_DATABASE = {
     "Ashiok, Wicked Manipulator": {'type': 'planeswalker', 'cost': 5.0, 'loyalty': 5, 'abilities': ['create_token_1_1']},
     "Ashroot Animist": {'type': 'creature', 'cost': 4.0, 'power': 4, 'toughness': 4, 'keywords': ['trample']},
     "Asinine Antics": {'type': 'sorcery', 'cost': 4.0, 'abilities': ['create_token_1_1']},
-    "Assassin's Trophy": {'type': 'instant', 'cost': 2.0},
+    "Assassin's Trophy": {'type': 'instant', 'cost': 2.0, 'abilities': ['destroy_creature']},
     "Assemble the Players": {'type': 'enchantment', 'cost': 2.0},
     "Assimilation Aegis": {'type': 'artifact', 'cost': 3.0},
     "Astrologian's Planisphere": {'type': 'artifact', 'cost': 2.0, 'abilities': ['create_token_1_1', 'spell_trigger']},

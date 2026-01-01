@@ -1,0 +1,27 @@
+// Deck 08 - Simic Ramp
+// Green ramp with blue card draw
+
+// 2-drops (8)
+4 Abzan Devotee
+4 Aftermath Analyst
+
+// 3-drops (8)
+4 Armored Kincaller
+4 Abuelo, Ancestral Echo
+
+// 4-drops (4)
+4 Alania's Pathmaker
+
+// 5-drops (8)
+4 Alania, Divergent Storm
+4 Ambling Stormshell
+
+// 6-drops (4)
+4 Archive Dragon
+
+// Spells (4)
+4 Arcane Epiphany
+
+// Lands (24)
+12 Island
+12 Forest

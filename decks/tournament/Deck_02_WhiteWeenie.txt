@@ -1,0 +1,25 @@
+// Deck 02 - White Weenie
+// Efficient small creatures with keywords
+
+// 1-drops (8)
+4 Armored Armadillo
+4 Aegis Turtle
+
+// 2-drops (12)
+4 Ajani's Pridemate
+4 Acrobatic Cheerleader
+4 Armory Mice
+
+// 3-drops (8)
+4 Arashin Sunshield
+4 Acolyte of Aclazotz
+
+// 4-drops (4)
+4 Archangel of Tithes
+
+// Support (8)
+4 Archon's Glory
+4 Acrobatic Leap
+
+// Lands (20)
+20 Plains

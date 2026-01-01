@@ -1,0 +1,28 @@
+Gruul_Dinosaur_Uncounterable_AI
+
+4 Llanowar Elves
+4 Ixalli's Lorekeeper
+4 Belligerent Yearling
+4 Pugnacious Hammerskull
+4 Hulking Raptor
+3 Trumpeting Carnosaur
+2 Palani's Hatcher
+1 Ghalta, Primal Hunger
+4 Triumphant Chomp
+4 Glimpse the Core
+4 Snakeskin Veil
+4 Cavern of Souls
+4 Copperline Gorge
+4 Karplusan Forest
+3 Rockfall Vale
+2 Restless Ridgeline
+3 Forest
+2 Mountain
+
+Sideboard
+4 Soul-Guide Lantern
+3 Brotherhood's End
+3 Pick Your Poison
+2 Tranquil Frillback
+2 Scavenging Ooze
+1 Ghalta, Primal Hunger

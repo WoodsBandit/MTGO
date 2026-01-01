@@ -1189,14 +1189,37 @@ def run_combat_phase(game: 'Game') -> bool:
     # Get attack declarations from AI or player
     declarations = []
     if hasattr(active_player, 'ai') and active_player.ai:
-        # AI chooses attackers
+        # AI chooses attackers using intelligent evaluation
+        ai = active_player.ai
+
+        # Build game state for AI decision making
+        try:
+            from ai.agent import build_game_state, perm_to_info
+        except ImportError:
+            from ..ai.agent import build_game_state, perm_to_info
+
+        state = build_game_state(game, active_player)
+
+        # Convert legal attackers to PermanentInfo for AI evaluation
+        available_attackers = []
+        attacker_map = {}  # Map reference to actual permanent
         for creature in legal_attackers:
-            # Simple AI: attack with everything
-            declarations.append(AttackDeclaration(
-                attacker=creature,
-                defending=defending_player,
-                is_legal=True
-            ))
+            info = perm_to_info(creature, game.active_player_id)
+            info.reference = creature  # Store reference for later
+            available_attackers.append(info)
+            attacker_map[id(creature)] = creature
+
+        # Let AI choose which creatures to attack with
+        chosen_refs = ai.choose_attackers(state, available_attackers)
+
+        # Convert AI choices back to declarations
+        for ref in chosen_refs:
+            if ref is not None:
+                declarations.append(AttackDeclaration(
+                    attacker=ref,
+                    defending=defending_player,
+                    is_legal=True
+                ))
 
     # Process attack declarations
     if declarations:
@@ -1235,20 +1258,52 @@ def run_combat_phase(game: 'Game') -> bool:
     # Defending player declares blockers
     block_declarations = []
     if hasattr(defending_player, 'ai') and defending_player.ai:
-        # AI chooses blockers - simple blocking strategy
-        available_blockers = list(game.zones.battlefield.creatures(defending_player_id))
+        # AI chooses blockers using intelligent evaluation
+        ai = defending_player.ai
 
+        # Build game state for AI decision making
+        try:
+            from ai.agent import build_game_state, perm_to_info
+        except ImportError:
+            from ..ai.agent import build_game_state, perm_to_info
+
+        state = build_game_state(game, defending_player)
+
+        # Convert attackers to PermanentInfo
+        attacker_infos = []
+        attacker_map = {}
         for attack_decl in combat.state.attackers:
             attacker = attack_decl.attacker
-            for blocker in available_blockers:
-                if combat.can_block(blocker, attacker):
-                    block_declarations.append(BlockDeclaration(
-                        blocker=blocker,
-                        blocking=attacker,
-                        is_legal=True
-                    ))
-                    available_blockers.remove(blocker)
-                    break
+            info = perm_to_info(attacker, game.active_player_id)
+            info.reference = attacker
+            attacker_infos.append(info)
+            attacker_map[id(attacker)] = attacker
+
+        # Convert available blockers to PermanentInfo
+        available_blockers = list(game.zones.battlefield.creatures(defending_player_id))
+        blocker_infos = []
+        blocker_map = {}
+        for blocker in available_blockers:
+            if any(combat.can_block(blocker, ad.attacker) for ad in combat.state.attackers):
+                info = perm_to_info(blocker, defending_player_id)
+                info.reference = blocker
+                blocker_infos.append(info)
+                blocker_map[id(blocker)] = blocker
+
+        # Let AI choose blocking assignments
+        block_assignments = ai.choose_blockers(state, attacker_infos, blocker_infos)
+
+        # Convert AI choices back to declarations
+        for attacker_ref, blocker_refs in block_assignments.items():
+            for blocker_ref in blocker_refs:
+                if attacker_ref is not None and blocker_ref is not None:
+                    # Verify the block is legal
+                    if combat.can_block(blocker_ref, attacker_ref):
+                        block_declarations.append(BlockDeclaration(
+                            blocker=blocker_ref,
+                            blocking=attacker_ref,
+                            is_legal=True
+                        ))
 
     # Process block declarations
     if block_declarations:

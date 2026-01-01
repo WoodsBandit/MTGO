@@ -1,0 +1,25 @@
+// Deck 01 - Mono Red Aggro
+// Fast damage creatures and burn
+
+// 1-drops (8)
+4 Cactuar
+4 Ankle Biter
+
+// 2-drops (12)
+4 Ash, Party Crasher
+4 Angry Rabble
+4 Axgard Cavalry
+
+// 3-drops (8)
+4 Ambush Wolf
+4 Afterburner Expert
+
+// 4-drops (4)
+4 Axebane Ferox
+
+// Burn (8)
+4 Burst Lightning
+4 Abrade
+
+// Lands (20)
+20 Mountain

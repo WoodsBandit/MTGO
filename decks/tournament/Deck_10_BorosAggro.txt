@@ -1,0 +1,26 @@
+// Deck 10 - Boros Aggro
+// Red/White aggressive creatures
+
+// 1-drops (8)
+4 Cactuar
+4 Armored Armadillo
+
+// 2-drops (12)
+4 Ash, Party Crasher
+4 Acrobatic Cheerleader
+4 Armory Mice
+
+// 3-drops (8)
+4 Arashin Sunshield
+4 Appendage Amalgam
+
+// 4-drops (4)
+4 Agrus Kos, Spirit of Justice
+
+// Spells (8)
+4 Archon's Glory
+4 Abrade
+
+// Lands (20)
+10 Mountain
+10 Plains

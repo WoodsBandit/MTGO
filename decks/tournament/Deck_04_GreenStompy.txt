@@ -1,0 +1,26 @@
+// Deck 04 - Green Stompy
+// Big creatures with trample
+
+// 1-drops (4)
+4 Aloe Alchemist
+
+// 2-drops (8)
+4 Aftermath Analyst
+4 Ambrosia Whiteheart
+
+// 3-drops (8)
+4 Attuned Hunter
+4 Ambush Wolf
+
+// 4-drops (8)
+4 Ashroot Animist
+4 Anthropede
+
+// 5-drops (4)
+4 Agatha's Champion
+
+// 6-drops (4)
+4 Apothecary Stomper
+
+// Lands (24)
+24 Forest

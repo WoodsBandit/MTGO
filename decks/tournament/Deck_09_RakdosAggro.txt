@@ -1,0 +1,26 @@
+// Deck 09 - Rakdos Aggro
+// Black/Red aggressive creatures
+
+// 1-drops (8)
+4 Ankle Biter
+4 Cactuar
+
+// 2-drops (12)
+4 Ash, Party Crasher
+4 Agate-Blade Assassin
+4 Balemurk Leech
+
+// 3-drops (8)
+4 Alley Assailant
+4 Adrenaline Jockey
+
+// 4-drops (4)
+4 Axebane Ferox
+
+// Spells (8)
+4 Abrade
+4 Bake into a Pie
+
+// Lands (20)
+10 Mountain
+10 Swamp

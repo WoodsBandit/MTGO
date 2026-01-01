@@ -1,0 +1,25 @@
+// Deck 07 - Orzhov Midrange
+// White/Black value creatures
+
+// 2-drops (8)
+4 Ajani's Pridemate
+4 Arabella, Abandoned Doll
+
+// 3-drops (12)
+4 Acolyte of Aclazotz
+4 Avenger of the Fallen
+4 Abyssal Harvester
+
+// 4-drops (8)
+4 Aurelia's Vindicator
+4 Ashiok's Reaper
+
+// 5-drops (4)
+4 Aclazotz, Deepest Betrayal // Temple of the Dead
+
+// Spells (4)
+4 Auspicious Arrival
+
+// Lands (24)
+12 Plains
+12 Swamp

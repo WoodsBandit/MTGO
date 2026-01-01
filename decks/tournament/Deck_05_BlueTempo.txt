@@ -1,0 +1,27 @@
+// Deck 05 - Blue Tempo
+// Flyers and counterspells
+
+// 1-drops (4)
+4 Aegis Turtle
+
+// 2-drops (8)
+4 Aquatic Alchemist // Bubble Up
+4 Archmage's Newt
+
+// 3-drops (12)
+4 Abuelo, Ancestral Echo
+4 Aven Interrupter
+4 Agent Venom
+
+// 4-drops (4)
+4 Aegis Sculptor
+
+// 6-drops (4)
+4 Archive Dragon
+
+// Spells (8)
+4 Amazing Acrobatics
+4 Airbending Lesson
+
+// Lands (20)
+20 Island

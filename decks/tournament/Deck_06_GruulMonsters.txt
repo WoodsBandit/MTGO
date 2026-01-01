@@ -1,0 +1,27 @@
+// Deck 06 - Gruul Monsters
+// Big red/green creatures
+
+// 2-drops (8)
+4 Angry Rabble
+4 Aftermath Analyst
+
+// 3-drops (8)
+4 Attuned Hunter
+4 Appendage Amalgam
+
+// 4-drops (8)
+4 Axebane Ferox
+4 Anzrag, the Quake-Mole
+
+// 5-drops (4)
+4 Agonasaur Rex
+
+// 6-drops (4)
+4 Affectionate Indrik
+
+// Spells (4)
+4 Archdruid's Charm
+
+// Lands (24)
+12 Mountain
+12 Forest

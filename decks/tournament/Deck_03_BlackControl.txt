@@ -1,0 +1,22 @@
+// Deck 03 - Black Control
+// Removal and card advantage
+
+// Creatures (16)
+4 Ankle Biter
+4 Agate-Blade Assassin
+4 Ashiok's Reaper
+4 Arbiter of Woe
+
+// Removal (12)
+4 Assassin's Trophy
+4 Bake into a Pie
+4 Abrade
+
+// Card Draw (4)
+4 Abandon Attachments
+
+// Utility (4)
+4 Agatha's Soul Cauldron
+
+// Lands (24)
+24 Swamp

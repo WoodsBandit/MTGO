@@ -653,63 +653,146 @@ class SimpleAI(AIAgent):
         return None
 
     def _evaluate_card_to_cast(self, card: CardInfo, state: GameState) -> float:
-        """Evaluate how good it would be to cast this card now."""
+        """
+        Evaluate how good it would be to cast this card now.
+
+        Uses expert MTG strategy principles:
+        1. Board presence is critical - creatures that can attack/block are valuable
+        2. Curve efficiency - playing on-curve is important
+        3. Context matters - removal is only good if there's something to remove
+        4. Tempo - developing your board is usually better than non-impactful plays
+        """
         score = 0.0
+        my_creature_count = len(state.my_creatures)
+        opp_creature_count = len(state.opp_creatures)
+        turn_approximation = state.total_mana  # Rough turn estimate
 
         if card.is_creature:
-            # Base score from power/toughness
             power = card.power or 0
             toughness = card.toughness or 0
-            score = power * 1.5 + toughness * 0.5
 
-            # Adjust for keywords
+            # Base value: creatures provide board presence
+            # Power matters more for racing, toughness for blocking
+            score = power * 2.0 + toughness * 1.0
+
+            # Keyword bonuses
             for keyword in card.keywords:
                 score += self.KEYWORD_VALUES.get(keyword.lower(), 0)
 
-            # Prefer efficient creatures (high stats for low cost)
+            # Mana efficiency bonus (stats per mana)
             if card.cmc > 0:
                 efficiency = (power + toughness) / card.cmc
-                score += efficiency * 0.5
+                score += efficiency * 1.0
 
-            # Bonus for having haste when we can attack
+            # CRITICAL: Early game creature priority
+            # If we have no creatures, getting one is extremely important
+            if my_creature_count == 0:
+                score += 5.0  # Major bonus for first creature
+            elif my_creature_count < 3:
+                score += 2.0  # Still want to develop
+
+            # Curve bonus - playing on curve is efficient
+            if card.cmc == state.total_mana and turn_approximation <= 4:
+                score += 2.0  # Using all mana efficiently early
+
+            # Haste is very valuable - immediate impact
             if "haste" in [k.lower() for k in card.keywords]:
-                score += 1.5
+                score += 2.5
+
+            # Deathtouch on small creatures is excellent value
+            if "deathtouch" in [k.lower() for k in card.keywords]:
+                if power <= 2:
+                    score += 2.0  # Small deathtouch trades up
 
         elif card.is_instant:
-            # Instants are situational - lower base priority in main phase
-            score = 2.0
+            # Instants in main phase - only cast if impactful
+            # Check if this is removal and if there's a target worth removing
+            has_removal_ability = any(
+                ability in str(card.abilities).lower()
+                for ability in ['destroy', 'damage', 'exile', 'bounce']
+            ) if hasattr(card, 'abilities') else False
+
+            if has_removal_ability and opp_creature_count > 0:
+                # Find biggest threat to evaluate removal value
+                max_threat = max((self._evaluate_threat(c) for c in state.opp_creatures), default=0)
+                score = 3.0 + max_threat * 0.5
+            else:
+                # Non-removal instants or no targets - low priority in main phase
+                score = 1.0
 
         elif card.is_sorcery:
-            # Sorceries have moderate priority
-            score = 3.0 + (6 - min(card.cmc, 6))
+            # Sorceries - evaluate based on impact
+            has_removal = any(
+                ability in str(card.abilities).lower()
+                for ability in ['destroy', 'damage', 'exile']
+            ) if hasattr(card, 'abilities') else False
+
+            if has_removal and opp_creature_count > 0:
+                max_threat = max((self._evaluate_threat(c) for c in state.opp_creatures), default=0)
+                score = 3.5 + max_threat * 0.5
+            else:
+                # Card draw sorceries etc
+                score = 2.5
 
         elif card.is_enchantment:
-            score = 2.5 + (5 - min(card.cmc, 5))
+            # Auras and enchantments - context dependent
+            if my_creature_count > 0:
+                score = 3.0  # Have targets for auras
+            else:
+                score = 1.5  # Less useful without creatures
 
         elif card.is_artifact:
-            score = 2.5 + (5 - min(card.cmc, 5))
+            # ARTIFACTS: Much lower priority than creatures
+            # Most artifacts don't affect the board immediately
+            # Equipment needs creatures, mana rocks are decent
+
+            # Check if it's equipment (usually has 'equip' in abilities)
+            is_equipment = 'equip' in str(card.abilities).lower() if hasattr(card, 'abilities') else False
+
+            if is_equipment and my_creature_count > 0:
+                score = 2.5  # Equipment with creatures
+            elif is_equipment:
+                score = 0.5  # Equipment without creatures is bad
+            else:
+                # Generic artifact - low priority, doesn't block
+                score = 1.0 + (3 - min(card.cmc, 3)) * 0.3
 
         elif card.is_planeswalker:
-            # Planeswalkers are high priority
-            score = 6.0
+            # Planeswalkers are powerful but need board presence to protect
+            if my_creature_count >= opp_creature_count:
+                score = 7.0  # Can protect the planeswalker
+            else:
+                score = 4.0  # Vulnerable, but still powerful
 
         else:
-            # Other spells
-            score = 3.0 + (6 - min(card.cmc, 6))
+            score = 2.0
 
-        # Reduce score if we'd be tapping out early
-        if state.total_mana <= 3 and card.cmc == state.total_mana:
-            score *= 0.8
+        # BOARD STATE ADJUSTMENTS
 
-        # Adjust based on board state
-        if len(state.my_creatures) > len(state.opp_creatures):
-            # We have board advantage, prefer threats
+        # If behind on board, prioritize catching up with creatures
+        if opp_creature_count > my_creature_count + 1:
             if card.is_creature:
-                score += 1.0
-        else:
-            # We're behind, prefer removal/interaction
+                score += 3.0  # Need blockers/threats
+            elif not (card.is_instant or card.is_sorcery):
+                score -= 2.0  # Non-creature, non-removal is bad when behind
+
+        # If ahead, can afford to play value cards
+        if my_creature_count > opp_creature_count + 2:
             if not card.is_creature:
-                score += 1.0
+                score += 1.0  # Can afford non-creature plays
+
+        # Life total considerations
+        if state.my_life <= 5:
+            # Desperate - prioritize blockers
+            if card.is_creature and (card.toughness or 0) >= 2:
+                score += 3.0
+
+        # Mana efficiency - don't leave mana unused if possible
+        leftover_mana = state.total_mana - card.cmc
+        if leftover_mana == 0:
+            score += 0.5  # Perfect mana usage
+        elif leftover_mana >= 2 and turn_approximation <= 3:
+            score -= 0.5  # Wasting mana early is bad
 
         return score
 
@@ -1238,3 +1321,445 @@ class RandomAI(AIAgent):
 
         # Less likely to mulligan as count increases
         return random.random() < (0.4 / (mulligan_count + 1))
+
+
+class ExpertAI(SimpleAI):
+    """
+    Expert-level AI that implements high-level MTG strategy concepts.
+
+    Based on fundamental MTG theory:
+    - "Who's the Beatdown" (Mike Flores) - Role assessment
+    - Tempo and card advantage
+    - Board state evaluation and clock calculation
+    - Proper sequencing and resource management
+    - Risk/reward evaluation
+    """
+
+    # Role types for strategic decision making
+    ROLE_BEATDOWN = "beatdown"      # Aggressive, trying to win fast
+    ROLE_CONTROL = "control"        # Defensive, trying to stabilize
+    ROLE_UNKNOWN = "unknown"        # Early game, role unclear
+
+    def __init__(self, player: Any, game: Any):
+        super().__init__(player, game)
+        self.current_role = self.ROLE_UNKNOWN
+        self.turn_count = 0
+        self.damage_dealt_this_game = 0
+        self.damage_taken_this_game = 0
+
+    def _assess_role(self, state: GameState) -> str:
+        """
+        Determine if we're the beatdown or control.
+
+        Per Mike Flores: "Misassignment of role = game loss"
+        The faster deck should be beatdown, the slower deck should be control.
+        """
+        # Calculate our clock (turns to kill opponent)
+        our_power = sum(c.power or 0 for c in state.my_creatures if c.can_attack)
+        our_clock = (state.opp_life / our_power) if our_power > 0 else float('inf')
+
+        # Calculate their clock
+        opp_power = sum(c.power or 0 for c in state.opp_creatures if not c.has_summoning_sickness)
+        opp_clock = (state.my_life / opp_power) if opp_power > 0 else float('inf')
+
+        # Factor in hand quality - creatures in hand mean future development
+        our_future_power = sum(
+            (c.power or 0) for c in state.my_hand
+            if c.is_creature and c.cmc <= state.total_mana + 2
+        )
+        their_board_growth = opp_power * 0.5  # Assume some growth
+
+        adjusted_our_clock = our_clock - (our_future_power / max(state.opp_life, 1)) * 2
+        adjusted_their_clock = opp_clock - (their_board_growth / max(state.my_life, 1)) * 2
+
+        # Life total considerations
+        if state.my_life <= 5:
+            # We're dying - must block/control
+            return self.ROLE_CONTROL
+
+        if state.opp_life <= 5:
+            # They're dying - push damage
+            return self.ROLE_BEATDOWN
+
+        # Compare clocks
+        if adjusted_our_clock < adjusted_their_clock - 1:
+            return self.ROLE_BEATDOWN
+        elif adjusted_their_clock < adjusted_our_clock - 1:
+            return self.ROLE_CONTROL
+        else:
+            # Close race - generally be beatdown unless very behind on board
+            if len(state.my_creatures) >= len(state.opp_creatures):
+                return self.ROLE_BEATDOWN
+            return self.ROLE_CONTROL
+
+    def _calculate_clock(self, power: int, life: int) -> float:
+        """Calculate turns to kill based on power and life."""
+        if power <= 0:
+            return float('inf')
+        return life / power
+
+    def _evaluate_board_position(self, state: GameState) -> float:
+        """
+        Evaluate board position as a score.
+        Positive = we're ahead, Negative = we're behind.
+        """
+        score = 0.0
+
+        # Creature advantage
+        my_total_power = sum(c.power or 0 for c in state.my_creatures)
+        my_total_toughness = sum(c.toughness or 0 for c in state.my_creatures)
+        opp_total_power = sum(c.power or 0 for c in state.opp_creatures)
+        opp_total_toughness = sum(c.toughness or 0 for c in state.opp_creatures)
+
+        score += (my_total_power - opp_total_power) * 1.5
+        score += (my_total_toughness - opp_total_toughness) * 0.5
+        score += (len(state.my_creatures) - len(state.opp_creatures)) * 1.0
+
+        # Life advantage
+        life_diff = state.my_life - state.opp_life
+        score += life_diff * 0.3
+
+        # Card advantage (hand size as proxy)
+        hand_diff = len(state.my_hand) - 5  # Assume opponent has ~5 cards
+        score += hand_diff * 0.5
+
+        # Keyword value
+        for creature in state.my_creatures:
+            for kw in creature.keywords:
+                score += self.KEYWORD_VALUES.get(kw.lower(), 0) * 0.3
+
+        for creature in state.opp_creatures:
+            for kw in creature.keywords:
+                score -= self.KEYWORD_VALUES.get(kw.lower(), 0) * 0.3
+
+        return score
+
+    def get_priority_action(self, state: GameState) -> Action:
+        """
+        Expert priority action selection.
+
+        Implements proper sequencing:
+        1. Assess role and board state
+        2. Consider the game phase (early/mid/late)
+        3. Make tempo-positive plays
+        4. Manage resources efficiently
+        """
+        # Update role assessment
+        self.current_role = self._assess_role(state)
+        board_score = self._evaluate_board_position(state)
+
+        # Phase 1: Land drops (always first)
+        land_action = self._consider_land_drop(state)
+        if land_action:
+            return land_action
+
+        # Phase 2: Assess what we should be doing based on role
+        if self.current_role == self.ROLE_BEATDOWN:
+            return self._beatdown_priority(state, board_score)
+        else:
+            return self._control_priority(state, board_score)
+
+    def _consider_land_drop(self, state: GameState) -> Optional[Action]:
+        """Consider playing a land - always prioritize this."""
+        lands_in_hand = [c for c in state.my_hand if c.is_land]
+        if not lands_in_hand or self.land_played_this_turn:
+            return None
+
+        # Play the land that best enables our hand
+        # For now, just play the first available land
+        return Action(action_type="play_land", card=lands_in_hand[0].reference)
+
+    def _beatdown_priority(self, state: GameState, board_score: float) -> Action:
+        """
+        Beatdown role priority:
+        1. Develop creatures to increase clock
+        2. Remove blockers if necessary
+        3. Maintain tempo - keep spending mana
+        """
+        # Find castable spells
+        castable = self._get_castable_spells(state)
+
+        if not castable:
+            return Action(action_type="pass")
+
+        # Prioritize creatures when in beatdown mode
+        creatures = [c for c in castable if c.is_creature]
+        removal = [c for c in castable
+                   if c.is_instant or c.is_sorcery]
+
+        # If we have creatures, deploy them
+        if creatures:
+            # Pick the best creature for beatdown
+            best_creature = max(creatures, key=lambda c: self._beatdown_creature_value(c, state))
+            return Action(action_type="cast_spell", card=best_creature.reference)
+
+        # If opponent has blockers and we have removal, consider removing them
+        if removal and len(state.opp_creatures) > 0:
+            # Only use removal if it clears a significant blocker
+            biggest_blocker = max(state.opp_creatures, key=lambda c: c.toughness or 0)
+            if (biggest_blocker.toughness or 0) >= 3:  # Worth removing
+                best_removal = removal[0]
+                return Action(action_type="cast_spell", card=best_removal.reference)
+
+        # Deploy any spell to maintain tempo
+        if castable:
+            best = max(castable, key=lambda c: self._evaluate_card_to_cast(c, state))
+            return Action(action_type="cast_spell", card=best.reference)
+
+        return Action(action_type="pass")
+
+    def _control_priority(self, state: GameState, board_score: float) -> Action:
+        """
+        Control role priority:
+        1. Remove threats
+        2. Deploy blockers
+        3. Stabilize the board
+        """
+        castable = self._get_castable_spells(state)
+
+        if not castable:
+            return Action(action_type="pass")
+
+        # Prioritize removal when in control mode
+        removal = [c for c in castable
+                   if c.is_instant or c.is_sorcery]
+        creatures = [c for c in castable if c.is_creature]
+
+        # If facing threats, remove them
+        if removal and len(state.opp_creatures) > 0:
+            # Target the biggest threat
+            biggest_threat = max(state.opp_creatures,
+                                key=lambda c: self._evaluate_threat(c))
+            if self._evaluate_threat(biggest_threat) >= 4:  # Worth removing
+                return Action(action_type="cast_spell", card=removal[0].reference)
+
+        # Deploy blockers - prioritize high toughness
+        if creatures:
+            # Pick creatures that can block well
+            best_blocker = max(creatures, key=lambda c: self._control_creature_value(c, state))
+            return Action(action_type="cast_spell", card=best_blocker.reference)
+
+        # Use removal on any creature if we're behind
+        if removal and len(state.opp_creatures) > len(state.my_creatures):
+            return Action(action_type="cast_spell", card=removal[0].reference)
+
+        # Otherwise, develop
+        if castable:
+            best = max(castable, key=lambda c: self._evaluate_card_to_cast(c, state))
+            return Action(action_type="cast_spell", card=best.reference)
+
+        return Action(action_type="pass")
+
+    def _beatdown_creature_value(self, card: CardInfo, state: GameState) -> float:
+        """Value a creature for beatdown strategy."""
+        power = card.power or 0
+        toughness = card.toughness or 0
+
+        # Power is king for beatdown
+        value = power * 3.0 + toughness * 0.5
+
+        # Haste is extremely valuable - immediate damage
+        if "haste" in [k.lower() for k in card.keywords]:
+            value += power * 2.0  # Double the power value for haste
+
+        # Evasion is great
+        if "flying" in [k.lower() for k in card.keywords]:
+            value += 2.0
+        if "trample" in [k.lower() for k in card.keywords]:
+            value += 1.5
+        if "menace" in [k.lower() for k in card.keywords]:
+            value += 1.0
+
+        # Efficiency
+        if card.cmc > 0:
+            value += (power / card.cmc) * 2.0
+
+        return value
+
+    def _control_creature_value(self, card: CardInfo, state: GameState) -> float:
+        """Value a creature for control strategy."""
+        power = card.power or 0
+        toughness = card.toughness or 0
+
+        # Toughness is king for control - need to block
+        value = toughness * 2.5 + power * 1.0
+
+        # Deathtouch is excellent for control - trades with anything
+        if "deathtouch" in [k.lower() for k in card.keywords]:
+            value += 4.0
+
+        # Reach helps block flyers
+        if "reach" in [k.lower() for k in card.keywords]:
+            has_flyers = any("flying" in [k.lower() for k in c.keywords]
+                            for c in state.opp_creatures)
+            if has_flyers:
+                value += 3.0
+
+        # Lifelink helps stabilize
+        if "lifelink" in [k.lower() for k in card.keywords]:
+            value += 2.0
+
+        # Flying blockers are valuable
+        if "flying" in [k.lower() for k in card.keywords]:
+            value += 1.5
+
+        return value
+
+    def _get_castable_spells(self, state: GameState) -> List[CardInfo]:
+        """Get list of spells we can cast right now."""
+        castable = []
+        for card in state.my_hand:
+            if card.is_land:
+                continue
+            if not state.can_afford(card.cmc):
+                continue
+            # Check if casting would overcommit mana
+            if self._would_overcommit(card, state):
+                continue
+            castable.append(card)
+        return castable
+
+    def _would_overcommit(self, card: CardInfo, state: GameState) -> bool:
+        """Check if casting this would leave us too vulnerable."""
+        # In early game, don't worry about holding mana
+        if state.total_mana <= 3:
+            return False
+
+        # In late game, sometimes want to hold mana for instants
+        remaining = state.total_mana - card.cmc
+        has_instants = any(c.is_instant for c in state.my_hand if c.cmc <= remaining)
+
+        # If we have instants and opponent has threats, maybe hold
+        if has_instants and len(state.opp_creatures) > 0:
+            return False  # Don't overcommit but for now allow the play
+
+        return False  # Default to playing spells
+
+    def choose_attackers(self, state: GameState, available: List[PermanentInfo]) -> List[Any]:
+        """
+        Expert attack decisions based on role and board state.
+        """
+        if not available:
+            return []
+
+        self.current_role = self._assess_role(state)
+        attackers: List[Any] = []
+        potential_blockers = [c for c in state.opp_creatures if c.can_block]
+
+        # Calculate total possible damage
+        total_damage = sum(c.power or 0 for c in available if c.can_attack)
+
+        # ALWAYS attack with lethal
+        if total_damage >= state.opp_life:
+            return [c.reference for c in available if c.can_attack]
+
+        # Role-based attack decisions
+        if self.current_role == self.ROLE_BEATDOWN:
+            # Aggressive - attack with most things
+            for creature in available:
+                if not creature.can_attack:
+                    continue
+
+                # Always attack with evasion
+                if creature.has_keyword("flying"):
+                    flying_blockers = [b for b in potential_blockers
+                                      if b.has_keyword("flying") or b.has_keyword("reach")]
+                    if not flying_blockers:
+                        attackers.append(creature.reference)
+                        continue
+
+                # Always attack with unblockable
+                if creature.has_keyword("unblockable"):
+                    attackers.append(creature.reference)
+                    continue
+
+                # Attack if profitable or if we're ahead
+                if self._can_attack_profitably(creature, potential_blockers):
+                    attackers.append(creature.reference)
+                elif len(state.my_creatures) > len(state.opp_creatures) + 1:
+                    # We're ahead on board, can afford to race
+                    attackers.append(creature.reference)
+
+        else:
+            # Control - only attack when safe
+            for creature in available:
+                if not creature.can_attack:
+                    continue
+
+                # Only attack with evasive creatures or when clearly safe
+                if creature.has_keyword("flying"):
+                    flying_blockers = [b for b in potential_blockers
+                                      if b.has_keyword("flying") or b.has_keyword("reach")]
+                    if not flying_blockers:
+                        attackers.append(creature.reference)
+                        continue
+
+                if creature.has_keyword("unblockable"):
+                    attackers.append(creature.reference)
+                    continue
+
+                # Only attack if completely safe
+                if not potential_blockers:
+                    attackers.append(creature.reference)
+                elif creature.has_keyword("vigilance"):
+                    # Vigilance means we can attack and still block
+                    if self._can_attack_profitably(creature, potential_blockers):
+                        attackers.append(creature.reference)
+
+        return attackers
+
+    def mulligan_decision(self, state: GameState, hand: List[CardInfo],
+                          mulligan_count: int) -> bool:
+        """
+        Expert mulligan decisions.
+
+        Key factors:
+        1. Land count (2-4 ideal for 7 cards)
+        2. Curve - do we have plays for turns 1-3?
+        3. Threat density - do we have a game plan?
+        """
+        land_count = sum(1 for c in hand if c.is_land)
+        spell_count = len(hand) - land_count
+        hand_size = len(hand)
+
+        # Always keep at 4 or fewer cards
+        if mulligan_count >= 3:
+            return False
+
+        # Always mulligan 0 lands or all lands
+        if land_count == 0 or land_count == hand_size:
+            return True
+
+        # Check mana curve
+        one_drops = sum(1 for c in hand if not c.is_land and c.cmc == 1)
+        two_drops = sum(1 for c in hand if not c.is_land and c.cmc == 2)
+        three_drops = sum(1 for c in hand if not c.is_land and c.cmc == 3)
+
+        early_plays = one_drops + two_drops + three_drops
+
+        # 7 card hand criteria
+        if hand_size == 7:
+            # Need 2-4 lands AND early plays
+            if land_count < 2 or land_count > 4:
+                return True
+            if early_plays == 0:
+                return True
+            # Good hand - keep
+            return False
+
+        # 6 card hand - slightly more lenient
+        if hand_size == 6:
+            if land_count < 1 or land_count > 4:
+                return True
+            if early_plays == 0 and mulligan_count == 0:
+                return True
+            return False
+
+        # 5 card hand - keep almost anything reasonable
+        if hand_size == 5:
+            if land_count == 0 or land_count >= 4:
+                return True
+            return False
+
+        # 4 or fewer - always keep
+        return False
