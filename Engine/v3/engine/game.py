@@ -622,13 +622,13 @@ class Game:
                     permanent=perm
                 ))
 
-            # Clear summoning sickness flag
-            if hasattr(perm, 'entered_battlefield_this_turn'):
-                perm.entered_battlefield_this_turn = False
-            if hasattr(perm, 'has_summoning_sickness'):
-                # Creatures that started the turn under your control lose summoning sickness
-                if perm.controller_id == self.active_player_id:
-                    perm.has_summoning_sickness = False
+            # Clear summoning sickness for creatures that weren't just played (CR 302.6)
+            # Must check BEFORE resetting entered_battlefield_this_turn
+            if perm.is_creature and not getattr(perm, 'entered_battlefield_this_turn', False):
+                perm.summoning_sick = False
+
+            # Reset the "entered this turn" flag at start of turn
+            perm.entered_battlefield_this_turn = False
 
             # Clear damage from previous turn
             if hasattr(perm, 'characteristics') and perm.characteristics.is_creature():
@@ -947,6 +947,28 @@ class Game:
         # Check if we can cast (simplified - just check if in hand)
         if card not in hand.objects:
             return
+
+        # Check sorcery-speed restrictions (CR 307.1)
+        is_instant_speed = False
+        if hasattr(card, 'characteristics') and card.characteristics:
+            # Check if instant type
+            for t in card.characteristics.types:
+                if str(t).lower() == 'instant' or (hasattr(t, 'name') and t.name.lower() == 'instant'):
+                    is_instant_speed = True
+                    break
+            # Check for flash keyword
+            if not is_instant_speed and hasattr(card.characteristics, 'keywords'):
+                keywords = card.characteristics.keywords or []
+                if any(str(k).lower() == 'flash' for k in keywords):
+                    is_instant_speed = True
+
+        if not is_instant_speed:
+            # Must be main phase
+            if self.current_phase not in (PhaseType.PRECOMBAT_MAIN, PhaseType.POSTCOMBAT_MAIN):
+                return
+            # Stack must be empty
+            if not self.zones.stack.is_empty():
+                return
 
         # PAY MANA COST - CR 601.2h
         mana_cost_str = card.characteristics.mana_cost if card.characteristics else None
