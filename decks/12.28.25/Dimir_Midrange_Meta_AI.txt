@@ -1,0 +1,30 @@
+4 Deep-Cavern Bat
+4 Spyglass Siren
+4 Floodpits Drowner
+4 Enduring Curiosity
+4 Preacher of the Schism
+3 Kaito, Bane of Nightmares
+3 Tishana's Tidebinder
+3 Shoot the Sheriff
+2 Bitter Triumph
+2 Phantom Interference
+2 Tragic Trajectory
+1 Stab
+1 Nowhere to Run
+4 Watery Grave
+4 Gloomlake Verge
+4 Island
+4 Multiversal Passage
+3 Soulstone Sanctuary
+2 Restless Reef
+2 Intimidation Tactics
+4 Swamp
+
+Sideboard
+4 Day of Black Sun
+3 Annul
+2 Duress
+2 Tishana's Tidebinder
+2 Qarsi Revenant
+1 Kaito, Bane of Nightmares
+1 Spider-Sense

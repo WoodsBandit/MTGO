@@ -1,0 +1,27 @@
+Test Fundamentals AI
+
+// 1-drops (4)
+4 Monastery Swiftspear
+
+// 2-drops (8)
+4 Goblin Guide
+4 Elvish Visionary
+
+// 3-drops (8)
+4 Boggart Brute
+4 Centaur Courser
+
+// 4-drops (6)
+4 Rumbling Baloth
+2 Flametongue Kavu
+
+// 5-drops (4)
+4 Stampeding Elk Herd
+
+// Removal (6)
+4 Lightning Bolt
+2 Shock
+
+// Lands (24)
+12 Mountain
+12 Forest

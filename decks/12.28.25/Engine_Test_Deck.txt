@@ -1,0 +1,26 @@
+// Engine Test Deck - Simple Aggro
+// Designed for maximum engine compatibility
+// All cards have straightforward mechanics
+
+// 1-drops (8)
+4 Cactuar
+4 Diregraf Ghoul
+
+// 2-drops (12)
+4 Bristlepack Sentry
+4 Demon Wall
+4 Shipwreck Sentry
+
+// 3-drops (8)
+4 Pugnacious Hammerskull
+4 Fear of Exposure
+
+// 4-drops (4)
+4 Colossal Rattlewurm
+
+// Burn (8)
+4 Burst Lightning
+4 Abrade
+
+// Lands (20)
+20 Mountain

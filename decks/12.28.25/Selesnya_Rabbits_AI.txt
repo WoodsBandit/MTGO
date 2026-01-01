@@ -1,0 +1,22 @@
+4 Valley Mightcaller
+4 Pawpatch Recruit
+4 Finneas, Ace Archer
+4 Honored Dreyleader
+4 Caretaker's Talent
+4 Three Blind Mice
+4 Bushwhack
+4 Audience with Trostani
+4 For the Common Good
+2 Selvala, Eager Trailblazer
+4 Restless Prairie
+4 Oakhollow Village
+4 Blossoming Sands
+5 Plains
+5 Forest
+
+Sideboard
+4 Valorous Stance
+3 Glass Casket
+2 Banishing Light
+3 Thrashing Brontodon
+3 Snakeskin Veil

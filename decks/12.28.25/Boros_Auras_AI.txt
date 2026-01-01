@@ -1,0 +1,23 @@
+4 Optimistic Scavenger
+4 Heartflame Duelist
+4 Leonin Vanguard
+3 Leonin Skyhunter
+4 Ethereal Armor
+4 Shardmage's Rescue
+4 Feather of Flight
+4 Sheltered by Ghosts
+4 Boros Charm
+4 Lightning Helix
+4 Inspiring Vantage
+3 Restless Bivouac
+5 Plains
+5 Mountain
+4 Wind-Scarred Crag
+
+Sideboard
+2 Stroke of Midnight
+4 Burst Lightning
+2 Exorcise
+3 Obliterating Bolt
+2 Elspeth's Smite
+2 Not on My Watch
