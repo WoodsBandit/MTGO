@@ -13,6 +13,7 @@ from pathlib import Path
 import re
 import json
 import ast
+import hashlib
 
 from ..engine.types import (
     Color, CardType, Supertype, AbilityType, Zone,
@@ -21,6 +22,81 @@ from ..engine.types import (
 
 if TYPE_CHECKING:
     from ..engine.objects import Card, Token, Permanent, Characteristics, ManaCost
+
+
+# =============================================================================
+# Security: Database Hash Verification (SEC-003)
+# =============================================================================
+
+# SEC-003: Known good SHA-256 hashes for trusted database files
+# Add hashes of verified database files here for integrity checking
+TRUSTED_DATABASE_HASHES: set = set()
+
+# SEC-003: Enable strict mode to require hash verification
+STRICT_DATABASE_VERIFICATION: bool = False
+
+
+def register_trusted_database_hash(file_hash: str) -> None:
+    """
+    SEC-003: Register a SHA-256 hash as trusted for database loading.
+
+    Args:
+        file_hash: SHA-256 hex digest of a trusted database file
+    """
+    TRUSTED_DATABASE_HASHES.add(file_hash.lower())
+
+
+def _compute_file_hash(path: Path) -> str:
+    """Compute SHA-256 hash of a file."""
+    sha256 = hashlib.sha256()
+    with open(path, 'rb') as f:
+        for chunk in iter(lambda: f.read(8192), b''):
+            sha256.update(chunk)
+    return sha256.hexdigest()
+
+
+def _verify_database_integrity(path: Path) -> bool:
+    """
+    SEC-003: Verify database file integrity using SHA-256 hash.
+
+    Args:
+        path: Path to the database file
+
+    Returns:
+        True if hash matches a trusted hash, or if no hashes are registered
+
+    Raises:
+        ValueError: If STRICT_DATABASE_VERIFICATION is True and hash doesn't match
+    """
+    if not TRUSTED_DATABASE_HASHES:
+        # No hashes registered - allow loading (development mode)
+        return True
+
+    file_hash = _compute_file_hash(path)
+
+    if file_hash in TRUSTED_DATABASE_HASHES:
+        return True
+
+    if STRICT_DATABASE_VERIFICATION:
+        raise ValueError(
+            f"SEC-003: Database integrity check failed for {path}. "
+            f"Hash {file_hash} is not in the trusted list. "
+            f"This may indicate file tampering."
+        )
+
+    # Warn but allow in non-strict mode
+    import warnings
+    warnings.warn(
+        f"SEC-003: Database file {path} has unknown hash {file_hash}. "
+        f"Consider verifying the file and registering its hash.",
+        SecurityWarning
+    )
+    return False
+
+
+class SecurityWarning(UserWarning):
+    """Warning for security-related issues."""
+    pass
 
 
 # =============================================================================
@@ -360,6 +436,8 @@ class CardDatabase:
         """
         Load cards from V1 card_database.py format.
 
+        SEC-003: Uses SHA-256 hash verification before loading untrusted data.
+
         The V1 format is a Python dict literal:
         CARD_DATABASE = {
             "Card Name": {"type": "creature", "cost": 3.0, ...},
@@ -368,10 +446,17 @@ class CardDatabase:
 
         Args:
             path: Path to the V1 database file
+
+        Raises:
+            FileNotFoundError: If the database file doesn't exist
+            ValueError: If hash verification fails in strict mode (SEC-003)
         """
         path_obj = Path(path)
         if not path_obj.exists():
             raise FileNotFoundError(f"V1 database not found: {path}")
+
+        # SEC-003: Verify database integrity before loading
+        _verify_database_integrity(path_obj)
 
         content = path_obj.read_text(encoding='utf-8')
 
@@ -381,14 +466,22 @@ class CardDatabase:
         if not match:
             raise ValueError("Could not find CARD_DATABASE in file")
 
-        # Parse the dictionary using ast.literal_eval for safety
+        # SEC-003: Parse the dictionary using ast.literal_eval
+        # Note: ast.literal_eval is safe for literals but we add hash
+        # verification as defense in depth against file tampering
         try:
             v1_db = ast.literal_eval(match.group(1))
         except (SyntaxError, ValueError) as e:
             raise ValueError(f"Failed to parse V1 database: {e}")
 
+        # Validate the parsed data structure
+        if not isinstance(v1_db, dict):
+            raise ValueError("SEC-003: Database must be a dictionary")
+
         # Convert each entry
         for name, data in v1_db.items():
+            if not isinstance(name, str) or not isinstance(data, dict):
+                raise ValueError(f"SEC-003: Invalid entry format for '{name}'")
             card = parse_v1_entry(name, data)
             self.add(card)
 

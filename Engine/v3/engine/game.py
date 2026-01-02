@@ -866,15 +866,16 @@ class Game:
         if isinstance(action_type, str):
             action_type = action_type.lower()
 
-        # Execute based on action type
-        if action_type in (ActionType.PLAY_LAND, "play_land"):
-            self._execute_play_land_ai(player, action)
-        elif action_type in (ActionType.CAST_SPELL, "cast_spell"):
-            self._execute_cast_spell_ai(player, action)
-        elif action_type in (ActionType.ACTIVATE_ABILITY, "activate_ability"):
-            self._execute_activate_ability(action)
-        elif action_type in (ActionType.ACTIVATE_MANA_ABILITY, "activate_mana_ability"):
-            self._execute_activate_mana_ability(action)
+        # Execute based on action type using Python 3.10+ match statement
+        match action_type:
+            case ActionType.PLAY_LAND | "play_land":
+                self._execute_play_land_ai(player, action)
+            case ActionType.CAST_SPELL | "cast_spell":
+                self._execute_cast_spell_ai(player, action)
+            case ActionType.ACTIVATE_ABILITY | "activate_ability":
+                self._execute_activate_ability(action)
+            case ActionType.ACTIVATE_MANA_ABILITY | "activate_mana_ability":
+                self._execute_activate_mana_ability(action)
 
     def _execute_play_land_ai(self, player: 'Player', action: Any):
         """
@@ -971,13 +972,14 @@ class Game:
                 return
 
         # PAY MANA COST - CR 601.2h
-        mana_cost_str = card.characteristics.mana_cost if card.characteristics else None
-        if mana_cost_str:
-            from .mana import ManaCost
-            cost = ManaCost.parse(mana_cost_str)
-            if not self.mana_manager.auto_pay_cost(player_id, cost):
-                # Can't afford - don't cast
-                return
+        # Use SpellCastTransaction for atomic mana payment with validation
+        from .spell_transaction import SpellCastTransaction
+        transaction = SpellCastTransaction(self, player_id, card)
+        if not transaction.validate():
+            return
+        if not transaction.execute():
+            transaction.rollback()
+            return
 
         hand.remove(card)
 

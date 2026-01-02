@@ -30,7 +30,7 @@ PlayerId = int
 # COMBAT DATA CLASSES
 # =============================================================================
 
-@dataclass
+@dataclass(slots=True)
 class AttackDeclaration:
     """
     Declaration of an attacker (CR 508.1)
@@ -71,7 +71,7 @@ class AttackDeclaration:
         return False
 
 
-@dataclass
+@dataclass(slots=True)
 class BlockDeclaration:
     """
     Declaration of a blocker (CR 509.1)
@@ -98,7 +98,7 @@ class BlockDeclaration:
         return self.blocking.object_id if hasattr(self.blocking, 'object_id') else 0
 
 
-@dataclass
+@dataclass(slots=True)
 class DamageAssignment:
     """
     How damage is assigned from one source (CR 510.1)

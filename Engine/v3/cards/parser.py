@@ -31,6 +31,56 @@ if TYPE_CHECKING:
 
 
 # =============================================================================
+# Security Constants (SEC-002, SEC-007)
+# =============================================================================
+
+# SEC-007: Maximum cards allowed per entry to prevent resource exhaustion
+MAX_CARD_COUNT: int = 500
+
+# SEC-007: Maximum total cards in a deck (mainboard + sideboard)
+MAX_TOTAL_DECK_SIZE: int = 1000
+
+# SEC-002: Allowed directories for loading deck files
+ALLOWED_DECK_DIRECTORIES: set = set()
+
+
+def configure_allowed_deck_directories(*directories: str) -> None:
+    """SEC-002: Configure allowed directories for deck file loading."""
+    global ALLOWED_DECK_DIRECTORIES
+    ALLOWED_DECK_DIRECTORIES = {Path(d).resolve() for d in directories if d}
+
+
+def _validate_file_path(path: str) -> Path:
+    """SEC-002: Validate file path to prevent path traversal attacks."""
+    resolved_path = Path(path).resolve()
+    if not resolved_path.exists():
+        raise FileNotFoundError(f'Decklist file not found: {path}')
+    if not resolved_path.is_file():
+        raise ValueError(f'Path is not a file: {path}')
+    if ALLOWED_DECK_DIRECTORIES:
+        is_allowed = any(
+            resolved_path.is_relative_to(allowed_dir)
+            for allowed_dir in ALLOWED_DECK_DIRECTORIES
+        )
+        if not is_allowed:
+            raise ValueError(
+                f"SEC-002: Access denied - path '{path}' outside allowed directories"
+            )
+    return resolved_path
+
+
+def _validate_card_count(count: int, card_name: str) -> int:
+    """SEC-007: Validate card count to prevent resource exhaustion."""
+    if count < 1:
+        raise ValueError(f'Card count must be at least 1, got {count}')
+    if count > MAX_CARD_COUNT:
+        raise ValueError(
+            f"SEC-007: Card count {count} for '{card_name}' exceeds maximum ({MAX_CARD_COUNT})"
+        )
+    return count
+
+
+# =============================================================================
 # Data Classes
 # =============================================================================
 
@@ -242,6 +292,9 @@ class DecklistParser:
                 count = int(match.group(1))
                 card_name = match.group(2).strip()
 
+                # SEC-007: Validate card count to prevent resource exhaustion
+                _validate_card_count(count, card_name)
+
                 # Handle potential "SB:" prefix inline
                 if card_name.lower().startswith('sb:'):
                     card_name = card_name[3:].strip()
@@ -268,16 +321,20 @@ class DecklistParser:
         """
         Parse a decklist from a file.
 
+        SEC-002: Uses _validate_file_path to prevent path traversal attacks.
+
         Args:
             path: Path to the decklist file
 
         Returns:
             Parsed Decklist object
-        """
-        filepath = Path(path)
 
-        if not filepath.exists():
-            raise FileNotFoundError(f"Decklist file not found: {path}")
+        Raises:
+            FileNotFoundError: If the file doesn't exist
+            ValueError: If the path is outside allowed directories (SEC-002)
+        """
+        # SEC-002: Validate path to prevent directory traversal attacks
+        filepath = _validate_file_path(path)
 
         # Extract deck name from filename
         name = filepath.stem
@@ -757,6 +814,12 @@ def load_deck_file(filepath: str) -> Decklist:
 # =============================================================================
 
 __all__ = [
+    # Security constants (SEC-002, SEC-007)
+    'MAX_CARD_COUNT',
+    'MAX_TOTAL_DECK_SIZE',
+    'ALLOWED_DECK_DIRECTORIES',
+    'configure_allowed_deck_directories',
+
     # Data classes
     'DecklistEntry',
     'Decklist',

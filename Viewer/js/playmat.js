@@ -1,9 +1,63 @@
 /**
  * Playmat Module - Visual board state renderer for MTG game viewer
  * Manages the visual representation of the game state including cards, zones, and animations
+ *
+ * Security: SEC-001 XSS prevention via DOM APIs and input sanitization
  */
 
+// =============================================================================
+// Security: XSS Prevention Utilities (SEC-001)
+// =============================================================================
+
+/**
+ * SEC-001: Sanitize a number for safe display.
+ * @param {*} value - The value to validate
+ * @param {number} defaultValue - Default if invalid
+ * @returns {number} - Safe numeric value
+ */
+function sanitizeNumber(value, defaultValue = 0) {
+    const num = parseInt(value, 10);
+    if (isNaN(num) || !isFinite(num) || num < -10000 || num > 10000) {
+        return defaultValue;
+    }
+    return num;
+}
+
+/**
+ * SEC-001: Sanitize card name to prevent injection.
+ * @param {string} name - Card name to validate
+ * @returns {string} - Safe card name
+ */
+function sanitizeCardName(name) {
+    if (!name || typeof name !== 'string') {
+        return 'Unknown Card';
+    }
+    // Remove any HTML tags, limit length
+    return name.replace(/<[^>]*>/g, '').trim().substring(0, 200);
+}
+
+/**
+ * SEC-001: Clear element children safely (replaces innerHTML = '').
+ * @param {Element} element - Element to clear
+ */
+function clearElement(element) {
+    while (element.firstChild) {
+        element.removeChild(element.firstChild);
+    }
+}
+
+/**
+ * SEC-001: Create text node safely.
+ * @param {string} text - Text content
+ * @returns {Text} - Safe text node
+ */
+function createSafeText(text) {
+    return document.createTextNode(text == null ? '' : String(text));
+}
+
+// =============================================================================
 // Scryfall API integration for card images
+// =============================================================================
 const Scryfall = {
     baseUrl: 'https://api.scryfall.com',
     imageCache: new Map(),
@@ -937,8 +991,8 @@ class Playmat {
             }
         }
 
-        // Clear and rebuild zone
-        zoneContainer.innerHTML = '';
+        // SEC-001: Clear zone safely using DOM APIs
+        clearElement(zoneContainer);
 
         // Add cards
         for (const cardData of cards) {
@@ -977,7 +1031,8 @@ class Playmat {
         const stackContainer = this.container.querySelector('.stack-zone .zone-cards');
         if (!stackContainer) return;
 
-        stackContainer.innerHTML = '';
+        // SEC-001: Clear stack safely using DOM APIs
+        clearElement(stackContainer);
 
         for (const item of stackItems) {
             const cardEl = await this.createCardElement(item);
@@ -997,16 +1052,42 @@ class Playmat {
 
         if (!libraryZone) return;
 
-        const count = typeof libraryCount === 'number' ? libraryCount : (libraryCount?.length || 0);
+        // SEC-001: Sanitize the count value
+        const count = sanitizeNumber(
+            typeof libraryCount === 'number' ? libraryCount : (libraryCount?.length || 0),
+            0
+        );
 
-        libraryZone.innerHTML = `
-            <div class="library-pile">
-                <div class="card face-down"></div>
-                ${count > 1 ? '<div class="card face-down"></div>' : ''}
-                ${count > 2 ? '<div class="card face-down"></div>' : ''}
-                <div class="library-count-overlay">${count}</div>
-            </div>
-        `;
+        // SEC-001: Build library pile using DOM APIs instead of innerHTML
+        clearElement(libraryZone);
+
+        const libraryPile = document.createElement('div');
+        libraryPile.className = 'library-pile';
+
+        // Add face-down cards for visual pile effect
+        const card1 = document.createElement('div');
+        card1.className = 'card face-down';
+        libraryPile.appendChild(card1);
+
+        if (count > 1) {
+            const card2 = document.createElement('div');
+            card2.className = 'card face-down';
+            libraryPile.appendChild(card2);
+        }
+
+        if (count > 2) {
+            const card3 = document.createElement('div');
+            card3.className = 'card face-down';
+            libraryPile.appendChild(card3);
+        }
+
+        // SEC-001: Use textContent for count display (safe)
+        const countOverlay = document.createElement('div');
+        countOverlay.className = 'library-count-overlay';
+        countOverlay.textContent = String(count);
+        libraryPile.appendChild(countOverlay);
+
+        libraryZone.appendChild(libraryPile);
     }
 
     /**
