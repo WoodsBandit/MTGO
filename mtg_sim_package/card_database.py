@@ -1,7 +1,8 @@
 """
 MTG Standard Card Database
-Auto-generated from Scryfall API
-Cards: 3164
+Auto-generated from Scryfall API + manual additions
+Cards: 3194
+Last updated: January 2026
 """
 
 CARD_DATABASE = {
@@ -263,6 +264,7 @@ CARD_DATABASE = {
     "Billowing Shriekmass": {'type': 'creature', 'cost': 4.0, 'power': 2, 'toughness': 3, 'keywords': ['flying']},
     "Binding Negotiation": {'type': 'sorcery', 'cost': 2.0},
     "Biorganic Carapace": {'type': 'artifact', 'cost': 4.0, 'abilities': ['draw_1', 'pump_2_2']},
+    "Birds of Paradise": {'type': 'creature', 'cost': 1.0, 'power': 0, 'toughness': 1, 'keywords': ['flying'], 'abilities': ['tap_for_any']},
     "Bite Down": {'type': 'instant', 'cost': 2.0, 'abilities': ['damage_variable', 'bite']},
     "Bite Down on Crime": {'type': 'sorcery', 'cost': 4.0, 'abilities': ['damage_variable', 'bite']},
     "Bitter Chill": {'type': 'enchantment', 'cost': 2.0, 'abilities': ['draw_1']},
@@ -803,8 +805,9 @@ CARD_DATABASE = {
     "Elspeth, Storm Slayer": {'type': 'planeswalker', 'cost': 5.0, 'loyalty': 5, 'abilities': ['destroy_creature', 'create_token_1_1']},
     "Eluge, the Shoreless Sea": {'type': 'creature', 'cost': 4.0, 'power': 0, 'toughness': 0},
     "Elusive Otter // Grove's Bounty": {'type': 'creature', 'cost': 1.0, 'power': 1, 'toughness': 1},
-    "Elvish Archdruid": {'type': 'creature', 'cost': 3.0, 'power': 2, 'toughness': 2, 'abilities': ['mana_dork']},
+    "Elvish Archdruid": {'type': 'creature', 'cost': 3.0, 'power': 2, 'toughness': 2, 'abilities': ['tap_for_G']},
     "Elvish Archivist": {'type': 'creature', 'cost': 2.0, 'power': 0, 'toughness': 1, 'abilities': ['draw_1']},
+    "Elvish Mystic": {'type': 'creature', 'cost': 1.0, 'power': 1, 'toughness': 1, 'abilities': ['tap_for_G']},
     "Elvish Refueler": {'type': 'creature', 'cost': 3.0, 'power': 2, 'toughness': 3},
     "Elvish Regrower": {'type': 'creature', 'cost': 4.0, 'power': 4, 'toughness': 3},
     "Embalmed Ascendant": {'type': 'creature', 'cost': 3.0, 'power': 1, 'toughness': 2, 'abilities': ['create_token_2_2']},
@@ -1381,7 +1384,7 @@ CARD_DATABASE = {
     "It'll Quench Ya!": {'type': 'instant', 'cost': 2.0, 'abilities': ['counter_spell', 'counter_unless']},
     "Item Shopkeep": {'type': 'creature', 'cost': 2.0, 'power': 2, 'toughness': 2},
     "Itzquinth, Firstborn of Gishath": {'type': 'creature', 'cost': 2.0, 'power': 2, 'toughness': 3, 'keywords': ['haste'], 'abilities': ['damage_variable']},
-    "Ixalli's Lorekeeper": {'type': 'creature', 'cost': 1.0, 'power': 1, 'toughness': 1, 'abilities': ['mana_dork']},
+    "Ixalli's Lorekeeper": {'type': 'creature', 'cost': 1.0, 'power': 1, 'toughness': 1, 'abilities': ['tap_for_G']},
     "Izoni, Center of the Web": {'type': 'creature', 'cost': 6.0, 'power': 5, 'toughness': 4, 'keywords': ['menace'], 'abilities': ['draw_2', 'create_token']},
     "J. Jonah Jameson": {'type': 'creature', 'cost': 3.0, 'power': 2, 'toughness': 2, 'abilities': ['create_token']},
     "Jace Reawakened": {'type': 'planeswalker', 'cost': 2.0, 'loyalty': 3, 'abilities': ['draw_1']},
@@ -1552,7 +1555,7 @@ CARD_DATABASE = {
     "Living Lectern": {'type': 'creature', 'cost': 2.0, 'power': 0, 'toughness': 4, 'abilities': ['draw_1', 'create_token']},
     "Living Phone": {'type': 'creature', 'cost': 3.0, 'power': 2, 'toughness': 1},
     "Lizard, Connors's Curse": {'type': 'creature', 'cost': 4.0, 'power': 5, 'toughness': 5, 'keywords': ['trample']},
-    "Llanowar Elves": {'type': 'creature', 'cost': 1.0, 'power': 1, 'toughness': 1, 'abilities': ['mana_dork']},
+    "Llanowar Elves": {'type': 'creature', 'cost': 1.0, 'power': 1, 'toughness': 1, 'abilities': ['tap_for_G']},
     "Lo and Li, Twin Tutors": {'type': 'creature', 'cost': 5.0, 'power': 2, 'toughness': 2},
     "Loan Shark": {'type': 'creature', 'cost': 4.0, 'power': 3, 'toughness': 4, 'abilities': ['draw_1']},
     "Locke Cole": {'type': 'creature', 'cost': 3.0, 'power': 2, 'toughness': 3, 'keywords': ['lifelink', 'deathtouch'], 'abilities': ['draw_1']},
@@ -1715,7 +1718,7 @@ CARD_DATABASE = {
     "Mocking Sprite": {'type': 'creature', 'cost': 3.0, 'power': 2, 'toughness': 1, 'keywords': ['flying']},
     "Mockingbird": {'type': 'creature', 'cost': 1.0, 'power': 1, 'toughness': 1, 'keywords': ['flying']},
     "Moldering Gym // Weight Room": {'type': 'enchantment', 'cost': 9.0},
-    "Molt Tender": {'type': 'creature', 'cost': 1.0, 'power': 1, 'toughness': 1, 'abilities': ['mana_dork']},
+    "Molt Tender": {'type': 'creature', 'cost': 1.0, 'power': 1, 'toughness': 1, 'abilities': ['tap_for_G']},
     "Molten Collapse": {'type': 'sorcery', 'cost': 2.0, 'abilities': ['destroy_creature']},
     "Molten Exhale": {'type': 'sorcery', 'cost': 2.0, 'abilities': ['damage_4']},
     "Molten Man, Inferno Incarnate": {'type': 'creature', 'cost': 3.0, 'power': 0, 'toughness': 0},
@@ -3169,6 +3172,37 @@ CARD_DATABASE = {
     "Zul Ashur, Lich Lord": {'type': 'creature', 'cost': 2.0, 'power': 2, 'toughness': 2, 'keywords': ['ward']},
     "Zurgo's Vanguard": {'type': 'creature', 'cost': 3.0, 'power': 0, 'toughness': 3, 'abilities': ['create_token_1_1']},
     "Zurgo, Thunder's Decree": {'type': 'creature', 'cost': 3.0, 'power': 2, 'toughness': 4, 'abilities': ['create_token_1_1']},
+    # === MISSING META STAPLES (Added January 2026) ===
+    "Ouroboroid": {'type': 'creature', 'cost': 6.0, 'power': 5, 'toughness': 5, 'keywords': ['trample'], 'abilities': ['landfall', 'draw_2']},
+    "Thalia, Guardian of Thraben": {'type': 'creature', 'cost': 2.0, 'power': 2, 'toughness': 1, 'keywords': ['first_strike']},
+    "Raffine, Scheming Seer": {'type': 'creature', 'cost': 3.0, 'power': 1, 'toughness': 4, 'keywords': ['flying', 'ward'], 'abilities': ['draw_1']},
+    "Sheoldred, the Apocalypse": {'type': 'creature', 'cost': 4.0, 'power': 4, 'toughness': 5, 'keywords': ['deathtouch'], 'abilities': ['draw_1']},
+    "The Wandering Emperor": {'type': 'planeswalker', 'cost': 4.0, 'loyalty': 3, 'keywords': ['flash'], 'abilities': ['create_token_2_2', 'exile', 'pump_2_2']},
+    "Wedding Announcement // Wedding Festivity": {'type': 'enchantment', 'cost': 3.0, 'abilities': ['create_token_1_1', 'draw_1']},
+    "Dennick, Pious Apprentice // Dennick, Pious Apparition": {'type': 'creature', 'cost': 2.0, 'power': 2, 'toughness': 3, 'keywords': ['lifelink']},
+    "Negate": {'type': 'instant', 'cost': 2.0, 'abilities': ['counter_spell']},
+    "Duress": {'type': 'sorcery', 'cost': 1.0, 'abilities': ['discard']},
+    "Go for the Throat": {'type': 'instant', 'cost': 2.0, 'abilities': ['destroy_creature']},
+    "Void Rend": {'type': 'instant', 'cost': 3.0, 'abilities': ['destroy_creature', 'exile']},
+    "Temporary Lockdown": {'type': 'enchantment', 'cost': 3.0, 'abilities': ['exile']},
+    "Farewell": {'type': 'sorcery', 'cost': 6.0, 'abilities': ['destroy_creature', 'destroy_artifact', 'exile']},
+    "Elesh Norn, Mother of Machines": {'type': 'creature', 'cost': 5.0, 'power': 4, 'toughness': 7, 'keywords': ['vigilance']},
+    "Disdainful Stroke": {'type': 'instant', 'cost': 2.0, 'abilities': ['counter_spell']},
+    "Cut Down": {'type': 'instant', 'cost': 1.0, 'abilities': ['destroy_creature']},
+    "Plaza of Heroes": {'type': 'land', 'cost': 0.0},
+    "Sunfall": {'type': 'sorcery', 'cost': 5.0, 'abilities': ['exile', 'create_token']},
+    "Make Disappear": {'type': 'instant', 'cost': 2.0, 'abilities': ['counter_spell']},
+    "Reckoner Bankbuster": {'type': 'artifact', 'cost': 2.0, 'abilities': ['draw_1', 'create_token_1_1']},
+    "Fable of the Mirror-Breaker // Reflection of Kiki-Jiki": {'type': 'enchantment', 'cost': 3.0, 'abilities': ['create_token_2_2', 'draw_1']},
+    "Bloodtithe Harvester": {'type': 'creature', 'cost': 2.0, 'power': 3, 'toughness': 2, 'abilities': ['create_token', 'destroy_creature']},
+    "Invoke Despair": {'type': 'sorcery', 'cost': 5.0, 'abilities': ['destroy_creature', 'draw_1', 'damage_2']},
+    "Caves of Koilos": {'type': 'land', 'cost': 0.0},
+    "Adarkar Wastes": {'type': 'land', 'cost': 0.0},
+    "Underground River": {'type': 'land', 'cost': 0.0},
+    "Raffine's Tower": {'type': 'land', 'cost': 0.0},
+    "Kaito Shizuki": {'type': 'planeswalker', 'cost': 3.0, 'loyalty': 3, 'abilities': ['draw_1', 'create_token_1_1']},
+    "Liliana of the Veil": {'type': 'planeswalker', 'cost': 3.0, 'loyalty': 3, 'abilities': ['discard', 'destroy_creature']},
+    "Sorin the Mirthless": {'type': 'planeswalker', 'cost': 4.0, 'loyalty': 4, 'abilities': ['draw_1', 'create_token_2_2']},
 }
 
 
@@ -3224,4 +3258,212 @@ CARD_DATABASE.update({
     "Stormcarved Coast": {"type": "land", "cost": 0},
     "Felidar Retreat": {"type": "enchantment", "cost": 4, "abilities": ["landfall", "create_token_2_2"]},
     "Magebane Lizard": {"type": "creature", "cost": 2, "power": 2, "toughness": 3, "abilities": ["magebane"]},
+})
+
+# =============================================================================
+# AURA ENCHANTMENTS
+# =============================================================================
+CARD_DATABASE.update({
+    # Classic Auras
+    "Rancor": {
+        "type": "enchantment", "subtype": "aura", "cost": "G",
+        "grants": ["+2/+0", "trample"], "return_to_hand": True
+    },
+    "Ethereal Armor": {
+        "type": "enchantment", "subtype": "aura", "cost": "W",
+        "grants": ["+1/+1", "first strike"]  # Simplified: normally +1/+1 per enchantment
+    },
+    "Cartouche of Solidarity": {
+        "type": "enchantment", "subtype": "aura", "cost": "W",
+        "grants": ["+1/+1", "first strike"], "abilities": ["create_token_1_1"]
+    },
+    "Audacity": {
+        "type": "enchantment", "subtype": "aura", "cost": "G",
+        "grants": ["+2/+0"], "return_to_hand": True
+    },
+    "Dead Weight": {
+        "type": "enchantment", "subtype": "aura", "cost": "B",
+        "grants": ["-2/-2"]  # Negative stats
+    },
+    "Pacifism": {
+        "type": "enchantment", "subtype": "aura", "cost": "1W",
+        "grants": []  # Would need "can't attack or block" ability
+    },
+    "All That Glitters": {
+        "type": "enchantment", "subtype": "aura", "cost": "1W",
+        "grants": ["+3/+3"]  # Simplified: normally +1/+1 per artifact/enchantment
+    },
+    "Warbriar Blessing": {
+        "type": "enchantment", "subtype": "aura", "cost": "1G",
+        "grants": ["+2/+2"], "abilities": ["fight"]
+    },
+    "Gift of Fangs": {
+        "type": "enchantment", "subtype": "aura", "cost": "B",
+        "grants": ["+2/+2"]  # Simplified: vampire mode
+    },
+    "Aura of Silence": {
+        "type": "enchantment", "subtype": "aura", "cost": "1WW",
+        "grants": [], "abilities": ["destroy_artifact"]
+    },
+    "Sentinel's Mark": {
+        "type": "enchantment", "subtype": "aura", "cost": "1W",
+        "grants": ["+1/+2", "vigilance", "lifelink"]
+    },
+    "Favor of the Overbeing": {
+        "type": "enchantment", "subtype": "aura", "cost": "1GU",
+        "grants": ["+2/+2", "flying", "vigilance"]
+    },
+})
+
+# =============================================================================
+# EQUIPMENT ARTIFACTS
+# =============================================================================
+CARD_DATABASE.update({
+    # Classic Equipment
+    "Lightning Greaves": {
+        "type": "artifact", "subtype": "equipment", "cost": "2",
+        "equip_cost": "0", "grants": ["haste", "shroud"]
+    },
+    "Swiftfoot Boots": {
+        "type": "artifact", "subtype": "equipment", "cost": "2",
+        "equip_cost": "1", "grants": ["haste", "hexproof"]
+    },
+    "Bonesplitter": {
+        "type": "artifact", "subtype": "equipment", "cost": "1",
+        "equip_cost": "1", "grants": ["+2/+0"]
+    },
+    "Darksteel Axe": {
+        "type": "artifact", "subtype": "equipment", "cost": "1",
+        "equip_cost": "2", "grants": ["+2/+0"]  # Also indestructible, simplified
+    },
+    "Sword of Fire and Ice": {
+        "type": "artifact", "subtype": "equipment", "cost": "3",
+        "equip_cost": "2", "grants": ["+2/+2"], "abilities": ["damage_2", "draw_1"]
+    },
+    "Loxodon Warhammer": {
+        "type": "artifact", "subtype": "equipment", "cost": "3",
+        "equip_cost": "3", "grants": ["+3/+0", "trample", "lifelink"]
+    },
+    "Basilisk Collar": {
+        "type": "artifact", "subtype": "equipment", "cost": "1",
+        "equip_cost": "2", "grants": ["deathtouch", "lifelink"]
+    },
+    "Embercleave": {
+        "type": "artifact", "subtype": "equipment", "cost": "4RR",
+        "equip_cost": "3", "grants": ["+1/+1", "double strike", "trample"],
+        "keywords": ["flash"]  # Can be cast at instant speed
+    },
+    "Colossus Hammer": {
+        "type": "artifact", "subtype": "equipment", "cost": "1",
+        "equip_cost": "8", "grants": ["+10/+10"]
+    },
+    "Short Sword": {
+        "type": "artifact", "subtype": "equipment", "cost": "1",
+        "equip_cost": "1", "grants": ["+1/+1"]
+    },
+    "Leather Armor": {
+        "type": "artifact", "subtype": "equipment", "cost": "1",
+        "equip_cost": "1", "grants": ["+0/+1", "ward"]
+    },
+    "Maul of the Skyclaves": {
+        "type": "artifact", "subtype": "equipment", "cost": "2W",
+        "equip_cost": "2WW", "grants": ["+2/+2", "flying", "first strike"]
+    },
+    "Ancestral Blade": {
+        "type": "artifact", "subtype": "equipment", "cost": "1W",
+        "equip_cost": "1", "grants": ["+1/+1"], "abilities": ["create_token_1_1"]
+    },
+    "Mirror Shield": {
+        "type": "artifact", "subtype": "equipment", "cost": "2",
+        "equip_cost": "2", "grants": ["+0/+2", "hexproof"]
+    },
+    # =========================================================================
+    # MODAL DOUBLE-FACED CARDS (MDFCs)
+    # =========================================================================
+    # MDFCs have a "back" key containing the back face data
+    "Jwari Disruption // Jwari Ruins": {
+        "type": "instant", "mana_cost": "1U", "abilities": ["counter_unless_1"],
+        "back": {"type": "land", "produces": ["U"], "enters_tapped": True}
+    },
+    "Sea Gate Restoration // Sea Gate, Reborn": {
+        "type": "sorcery", "mana_cost": "4UUU", "abilities": ["draw_variable"],
+        "back": {"type": "land", "produces": ["U"], "enters_tapped": False}
+    },
+    "Agadeem's Awakening // Agadeem, the Undercrypt": {
+        "type": "sorcery", "mana_cost": "XBBB", "abilities": ["reanimate"],
+        "back": {"type": "land", "produces": ["B"], "enters_tapped": False}
+    },
+    "Malakir Rebirth // Malakir Mire": {
+        "type": "instant", "mana_cost": "B", "abilities": ["reanimate_self"],
+        "back": {"type": "land", "produces": ["B"], "enters_tapped": True}
+    },
+    "Emeria's Call // Emeria, Shattered Skyclave": {
+        "type": "sorcery", "mana_cost": "4WWW", "abilities": ["create_token_4_4"],
+        "back": {"type": "land", "produces": ["W"], "enters_tapped": False}
+    },
+    "Shatterskull Smashing // Shatterskull, the Hammer Pass": {
+        "type": "sorcery", "mana_cost": "XRR", "abilities": ["damage_variable"],
+        "back": {"type": "land", "produces": ["R"], "enters_tapped": False}
+    },
+    "Turntimber Symbiosis // Turntimber, Serpentine Wood": {
+        "type": "sorcery", "mana_cost": "4GGG", "abilities": ["tutor_creature"],
+        "back": {"type": "land", "produces": ["G"], "enters_tapped": False}
+    },
+    "Kazandu Mammoth // Kazandu Valley": {
+        "type": "creature", "mana_cost": "1GG", "power": 3, "toughness": 3,
+        "abilities": ["landfall_pump"],
+        "back": {"type": "land", "produces": ["G"], "enters_tapped": True}
+    },
+    "Beyeen Veil // Beyeen Coast": {
+        "type": "instant", "mana_cost": "1U", "abilities": ["tap_creature"],
+        "back": {"type": "land", "produces": ["U"], "enters_tapped": True}
+    },
+    "Pelakka Predation // Pelakka Caverns": {
+        "type": "sorcery", "mana_cost": "2B", "abilities": ["discard"],
+        "back": {"type": "land", "produces": ["B"], "enters_tapped": True}
+    },
+})
+
+# =============================================================================
+# VEHICLE ARTIFACTS
+# =============================================================================
+CARD_DATABASE.update({
+    "Smuggler's Copter": {
+        "type": "artifact", "subtype": "vehicle", "cost": "2",
+        "power": 3, "toughness": 3, "crew": 1,
+        "keywords": ["flying"],
+        "abilities": ["attack_trigger_loot"]
+    },
+    "Esika's Chariot": {
+        "type": "artifact", "subtype": "vehicle", "cost": "4",
+        "power": 4, "toughness": 4, "crew": 4,
+        "abilities": ["etb_create_2_2_cat", "attack_copy_token"]
+    },
+    "Heart of Kiran": {
+        "type": "artifact", "subtype": "vehicle", "cost": "2",
+        "power": 4, "toughness": 4, "crew": 3,
+        "keywords": ["flying", "vigilance"]
+    },
+    "Skysovereign, Consul Flagship": {
+        "type": "artifact", "subtype": "vehicle", "cost": "5",
+        "power": 6, "toughness": 5, "crew": 3,
+        "keywords": ["flying"],
+        "abilities": ["etb_damage_3", "attack_damage_3"]
+    },
+    "Reckoner Bankbuster": {
+        "type": "artifact", "subtype": "vehicle", "cost": "2",
+        "power": 4, "toughness": 4, "crew": 3,
+        "abilities": ["tap_draw_1"]
+    },
+    "Parhelion II": {
+        "type": "artifact", "subtype": "vehicle", "cost": "8",
+        "power": 5, "toughness": 5, "crew": 4,
+        "keywords": ["flying", "first strike", "vigilance"],
+        "abilities": ["attack_create_angels"]
+    },
+    "Cultivator's Caravan": {
+        "type": "artifact", "subtype": "vehicle", "cost": "3",
+        "power": 5, "toughness": 5, "crew": 3,
+        "abilities": ["mana_any"]
+    },
 })
