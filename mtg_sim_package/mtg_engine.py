@@ -2505,9 +2505,24 @@ class Game:
         self.trigger_queue.append((trigger_type, source, controller, data))
 
     def process_triggers(self):
-        """Process all queued triggers"""
-        while self.trigger_queue:
-            trigger_type, source, controller, data = self.trigger_queue.pop(0)
+        """Process all queued triggers in APNAP order (CR 603.3b)"""
+        if not self.trigger_queue:
+            return
+
+        # Get active player (whose turn it is)
+        active_player = self.active()
+
+        # Sort by APNAP: Active player's triggers first (go on stack first, resolve last)
+        def apnap_order(trigger):
+            trigger_type, source, controller, data = trigger
+            # Active player = 0, Non-active = 1 (lower goes on stack first)
+            return 0 if controller == active_player else 1
+
+        sorted_triggers = sorted(self.trigger_queue, key=apnap_order)
+        self.trigger_queue.clear()
+
+        # Process in APNAP order
+        for trigger_type, source, controller, data in sorted_triggers:
             self._resolve_trigger(trigger_type, source, controller, data)
 
     def _resolve_trigger(self, trigger_type: str, source: Card, controller: Player, data: Any):
@@ -2715,9 +2730,22 @@ class Game:
                 if c.instance_id == creature.instance_id:
                     self.queue_trigger("etb", c, controller, creature)
 
-    def fire_dies(self, creature: Card, controller: Player):
-        """Fire dies triggers when a creature dies and handle attachments"""
-        self.queue_trigger("dies", creature, controller, None)
+    def fire_dies(self, creature: Card, controller: Player, last_known_info: dict = None):
+        """Fire dies triggers with last known information (CR 603.10)"""
+        if last_known_info is None:
+            # Capture current state as last known (fallback)
+            # Note: In proper implementation, this should have been captured BEFORE moving zones
+            all_bf = self.p1.battlefield + self.p2.battlefield
+            p, t, kws = self.get_creature_with_bonuses(creature, all_bf)
+            last_known_info = {
+                'power': p,
+                'toughness': t,
+                'keywords': kws,
+                'counters': creature.counters.copy()
+            }
+
+        # Queue trigger with last known info
+        self.queue_trigger("dies", creature, controller, last_known_info)
         # Handle auras/equipment attached to this creature
         self.handle_creature_death_attachments(creature, controller)
 
@@ -3329,7 +3357,70 @@ class Game:
         self.next_id += 1
         player.battlefield.append(token)
         self.log.log(f"    Creates {power}/{toughness} {name}")
-    
+
+    def _validate_target_on_resolution(self, card: Card, target: Any, caster: Player) -> bool:
+        """
+        Check if target is still legal when spell resolves (CR 608.2b).
+        Returns False if spell should fizzle due to all targets being illegal.
+        """
+        if target is None:
+            return True  # Spell has no target
+
+        # Unwrap ward tuples to get actual target
+        actual_target = target
+        if isinstance(target, tuple):
+            if len(target) == 2:
+                if isinstance(target[1], int):
+                    # (target, ward_cost) - ward is checked at cast time
+                    actual_target = target[0]
+                else:
+                    # (my_creature, their_creature) for fight/bite - check second creature
+                    actual_target = target[1]
+            elif len(target) == 3:
+                # (my_creature, their_creature, ward_cost) for fight with ward
+                actual_target = target[1]
+
+        # If target is "face" (player damage), it's always valid
+        if actual_target == "face":
+            return True
+
+        # If target is a Card (creature/permanent)
+        if isinstance(actual_target, Card):
+            # Check if target is still on battlefield
+            opp = self.p2 if caster == self.p1 else self.p1
+            all_permanents = caster.battlefield + opp.battlefield
+            if actual_target not in all_permanents:
+                return False  # Target left battlefield
+
+            # Check if target gained hexproof/shroud/protection
+            # Shroud: Can't be targeted by anyone
+            if actual_target.has_keyword("shroud"):
+                return False
+
+            # Hexproof: Can't be targeted by opponents
+            if actual_target.controller != caster.player_id:
+                if actual_target.has_keyword("hexproof"):
+                    return False
+
+                # Protection from colors
+                for kw in actual_target.keywords:
+                    kw_lower = kw.lower()
+                    if kw_lower.startswith("protection"):
+                        prot_from = kw_lower.replace("protection from ", "").replace("protection_", "")
+                        # Color protection
+                        color_map = {"white": "W", "blue": "U", "black": "B", "red": "R", "green": "G"}
+                        if prot_from in color_map:
+                            protected_color = color_map[prot_from]
+                            # Check if source has that color
+                            source_colors = card.mana_cost.colors()
+                            if protected_color in source_colors:
+                                return False
+                        # Protection from everything
+                        if prot_from == "everything":
+                            return False
+
+        return True
+
     def resolve(self, player: Player, card: Card, target: Any, x_value: int = 0):
         """
         Resolve a spell or ability.
@@ -3341,6 +3432,13 @@ class Game:
         - A tuple (my_creature, their_creature, ward_cost) for fight/bite with ward
         x_value: The chosen X value for X spells (0 for non-X spells)
         """
+        # CR 608.2b: Check if all targets are still legal on resolution
+        if not self._validate_target_on_resolution(card, target, player):
+            # Spell fizzles - all targets illegal
+            self.log.log(f"  {card.name} fizzles (target no longer legal)")
+            player.graveyard.append(card)
+            return
+
         opp = self.opponent()
 
         # Handle ward cost payment
@@ -3428,6 +3526,14 @@ class Game:
     def resolve_stack_item(self, player: Player, item: StackItem):
         """Resolve a stack item with modal/kicker support."""
         card = item.card
+
+        # CR 608.2b: Check if all targets are still legal on resolution
+        if not self._validate_target_on_resolution(card, item.target, player):
+            # Spell fizzles - all targets illegal
+            self.log.log(f"  {card.name} fizzles (target no longer legal)")
+            player.graveyard.append(card)
+            return
+
         opp = self.opponent()
         actual_target = item.target
 
@@ -3821,6 +3927,77 @@ class Game:
             return True
         return False
 
+
+    def _protection_prevents_damage(self, source: Card, target: Card, battlefield: List[Card]) -> bool:
+        """
+        Check if target has protection from source's qualities.
+        CR 702.16e - Protection prevents all damage from sources with the stated quality.
+
+        Returns True if damage should be prevented, False otherwise.
+        """
+        # Get target's keywords including from attachments
+        _, _, target_keywords = self.get_creature_with_bonuses(target, battlefield)
+
+        for kw in target_keywords:
+            kw_lower = kw.lower()
+            if kw_lower.startswith("protection from "):
+                prot_from = kw_lower.replace("protection from ", "")
+
+                # Protection from everything
+                if prot_from == "everything":
+                    return True
+
+                # Protection from creatures
+                if prot_from == "creatures" and source.card_type == "creature":
+                    return True
+
+                # Protection from specific colors
+                source_colors = source.mana_cost.colors()
+                for color in source_colors:
+                    if prot_from == color.lower() or prot_from == color:
+                        return True
+
+                # Check for color names (white, blue, black, red, green)
+                color_map = {"w": "white", "u": "blue", "b": "black", "r": "red", "g": "green"}
+                for color_letter, color_name in color_map.items():
+                    if color_letter.upper() in source_colors and prot_from == color_name:
+                        return True
+
+        return False
+
+    def choose_damage_assignment_order(self, attacker: Card, blockers: List[Card], battlefield: List[Card]) -> List[Card]:
+        """
+        AI chooses damage assignment order (CR 510.1c - attacking player announces order).
+        Prioritizes killing threats (deathtouch, lifelink), then low toughness creatures.
+
+        Args:
+            attacker: The attacking creature
+            blockers: List of blocking creatures
+            battlefield: Combined battlefield for bonus calculations
+
+        Returns:
+            List of blockers in optimal damage assignment order
+        """
+        def priority_score(blocker):
+            _, blocker_t, blocker_kws = self.get_creature_with_bonuses(blocker, battlefield)
+            score = blocker_t  # Base: toughness (lower = easier kill)
+
+            # Kill deathtouch blockers first (they can kill any attacker)
+            if "deathtouch" in [k.lower() for k in blocker_kws] or blocker.has_keyword("deathtouch"):
+                score -= 100
+
+            # Kill lifelink blockers second (prevent life gain)
+            if "lifelink" in [k.lower() for k in blocker_kws] or blocker.has_keyword("lifelink"):
+                score -= 50
+
+            # Prefer higher power blockers (deal more damage back)
+            blocker_p, _, _ = self.get_creature_with_bonuses(blocker, battlefield)
+            score -= blocker_p * 5
+
+            return score
+
+        return sorted(blockers, key=priority_score)
+
     def deal_combat_damage(self, attackers: List[Card], blocks: Dict[int, List[int]],
                            first_strike_step: bool,
                            attack_targets: Dict[int, Optional[int]] = None) -> int:
@@ -3878,7 +4055,7 @@ class Game:
 
                 # Sort blockers by toughness (deal lethal to each in order)
                 # This simulates damage assignment order
-                blockers_sorted = sorted(blockers, key=lambda b: self.get_creature_with_bonuses(b, all_bf)[1])
+                blockers_sorted = self.choose_damage_assignment_order(att, blockers, all_bf)
 
                 if first_strike_step:
                     blocker_names = [b.name for b in blockers]
@@ -3895,19 +4072,30 @@ class Game:
                     # Check for deathtouch from attacker (including from attachments)
                     has_deathtouch = self.creature_has_keyword_with_attachments(att, "deathtouch", all_bf)
                     blocker_p, blocker_t, blocker_kws = self.get_creature_with_bonuses(blocker, all_bf)
+
+                    # Calculate damage to assign (for trample, this is what counts as "lethal")
                     if has_deathtouch:
                         # Deathtouch: 1 damage is lethal
-                        dmg_to_blocker = 1
+                        assigned_damage = 1
                     else:
-                        # Assign lethal damage
-                        dmg_to_blocker = max(1, blocker_t - blocker.damage_marked)
+                        # Assign lethal damage (blocker's toughness, not accounting for already marked damage
+                        # if protection prevented it from being marked)
+                        assigned_damage = max(1, blocker_t - blocker.damage_marked)
 
-                    dmg_to_blocker = min(dmg_to_blocker, remaining_damage)
-                    blocker.damage_marked += dmg_to_blocker
-                    # Track deathtouch damage for SBA checking
-                    if has_deathtouch and dmg_to_blocker > 0:
-                        blocker.deathtouch_damage = True
-                    remaining_damage -= dmg_to_blocker
+                    assigned_damage = min(assigned_damage, remaining_damage)
+
+                    # BUG FIX #1: Check if protection prevents this damage
+                    if not self._protection_prevents_damage(att, blocker, all_bf):
+                        # Damage is not prevented - mark it
+                        blocker.damage_marked += assigned_damage
+                        # Track deathtouch damage for SBA checking
+                        if has_deathtouch and assigned_damage > 0:
+                            blocker.deathtouch_damage = True
+                    # else: damage prevented by protection, but still counts as assigned for trample
+
+                    # BUG FIX #3: Subtract assigned damage (not marked) for trample calculation
+                    # CR 702.19b - assign lethal as if it weren't prevented, then prevent it
+                    remaining_damage -= assigned_damage
 
                 # Blockers deal damage back to attacker
                 for blocker in blockers:
@@ -3921,11 +4109,13 @@ class Game:
                                    (not first_strike_step and ((not blocker_first) or blocker_double))
 
                     if blocker_deals:
-                        att.damage_marked += blocker_p
-                        # Track deathtouch damage from blocker for SBA checking
-                        blocker_deathtouch = "deathtouch" in blocker_kws or blocker.has_keyword("deathtouch")
-                        if blocker_deathtouch and blocker_p > 0:
-                            att.deathtouch_damage = True
+                        # BUG FIX #1: Check if attacker has protection from blocker
+                        if not self._protection_prevents_damage(blocker, att, all_bf):
+                            att.damage_marked += blocker_p
+                            # Track deathtouch damage from blocker for SBA checking
+                            blocker_deathtouch = "deathtouch" in blocker_kws or blocker.has_keyword("deathtouch")
+                            if blocker_deathtouch and blocker_p > 0:
+                                att.deathtouch_damage = True
 
                 # Trample: excess damage goes to target (player or planeswalker)
                 has_trample = self.creature_has_keyword_with_attachments(att, "trample", all_bf)
@@ -4142,11 +4332,16 @@ class Game:
         - SBAs are checked whenever a player would receive priority
         - All applicable SBAs are performed simultaneously
         - Then SBAs are checked again until none apply
-        - Then triggered abilities go on the stack
+        - Then triggered abilities go on the stack (CR 704.3)
         """
         # Keep checking until no SBAs apply
+        sba_applied = False
         while self._check_sbas_once():
-            pass
+            sba_applied = True
+
+        # After all SBAs, process any triggers that fired (CR 704.3)
+        if self.trigger_queue:
+            self.process_triggers()
 
         # Return whether game should continue
         return self.winner is None
@@ -4323,19 +4518,51 @@ class Game:
 
                 # Aura must be attached to something
                 if aura.attached_to is not None:
-                    # Check if attached permanent still exists
-                    attached_exists = False
+                    # Find the attached permanent
+                    attached_perm = None
+                    attached_controller = None
                     for p in [self.p1, self.p2]:
                         for perm in p.battlefield:
                             if perm.instance_id == aura.attached_to:
-                                attached_exists = True
+                                attached_perm = perm
+                                attached_controller = p
                                 break
-                        if attached_exists:
+                        if attached_perm:
                             break
 
-                    if not attached_exists:
+                    should_fall_off = False
+                    fall_off_reason = ""
+
+                    if attached_perm is None:
+                        # Attached permanent no longer exists
+                        should_fall_off = True
+                        fall_off_reason = "attached permanent left battlefield"
+                    else:
+                        # Check if attached permanent has protection from Aura's colors or attributes
+                        aura_colors = aura.mana_cost.colors()
+                        for kw in attached_perm.keywords:
+                            kw_lower = kw.lower()
+                            if kw_lower.startswith("protection from "):
+                                prot_from = kw_lower.replace("protection from ", "")
+                                # Check color protection
+                                if prot_from in [c.lower() for c in aura_colors]:
+                                    should_fall_off = True
+                                    fall_off_reason = f"protection from {prot_from}"
+                                    break
+                                # Check "protection from everything"
+                                if prot_from == "everything":
+                                    should_fall_off = True
+                                    fall_off_reason = "protection from everything"
+                                    break
+                                # Check "protection from enchantments"
+                                if prot_from == "enchantments":
+                                    should_fall_off = True
+                                    fall_off_reason = "protection from enchantments"
+                                    break
+
+                    if should_fall_off:
                         permanents_to_remove.append((aura, player))
-                        self.log.log(f"  [SBA] {aura.name} goes to graveyard - attached permanent left battlefield")
+                        self.log.log(f"  [SBA] {aura.name} goes to graveyard - {fall_off_reason}")
 
         # =====================================================================
         # TOKEN SBAs (704.5d)
@@ -4365,10 +4592,20 @@ class Game:
         # Process creature deaths
         for creature, player in creatures_to_die:
             if creature in player.battlefield:
+                # Capture last known information BEFORE moving zones (CR 603.10)
+                all_bf = self.p1.battlefield + self.p2.battlefield
+                p, t, kws = self.get_creature_with_bonuses(creature, all_bf)
+                last_known = {
+                    'power': p,
+                    'toughness': t,
+                    'keywords': kws,
+                    'counters': creature.counters.copy()
+                }
+
                 player.battlefield.remove(creature)
                 if not creature.is_token:
                     player.graveyard.append(creature)
-                self.fire_dies(creature, player)
+                self.fire_dies(creature, player, last_known)
                 applied = True
 
         # Process planeswalker deaths

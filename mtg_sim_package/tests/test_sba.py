@@ -539,6 +539,102 @@ class TestAuraSBAs:
         assert equipment in game_with_creatures.p1.battlefield, "Equipment should stay"
         assert equipment not in game_with_creatures.p1.graveyard
 
+    def test_aura_falls_off_due_to_protection_from_color(self, game_with_creatures):
+        """CR 303.4d: Aura falls off when creature gains protection from Aura's color"""
+        creature = game_with_creatures.p1.battlefield[0]
+
+        # Red Aura enchanting the creature
+        aura = Card(
+            name="Flames of the Firebrand",
+            mana_cost=ManaCost(R=1),
+            card_type="enchantment",
+            subtype="aura",
+            keywords=["aura"],
+            instance_id=200,
+            attached_to=creature.instance_id
+        )
+        game_with_creatures.p1.battlefield.append(aura)
+
+        # Creature gains protection from red
+        creature.keywords.append("protection from r")
+
+        game_with_creatures.check_state()
+
+        # Aura should fall off due to protection
+        assert aura not in game_with_creatures.p1.battlefield, "Aura should fall off"
+        assert aura in game_with_creatures.p1.graveyard, "Aura should go to graveyard"
+
+    def test_aura_falls_off_due_to_protection_from_enchantments(self, game_with_creatures):
+        """CR 303.4d: Aura falls off when creature gains protection from enchantments"""
+        creature = game_with_creatures.p1.battlefield[0]
+
+        aura = Card(
+            name="Test Aura",
+            mana_cost=ManaCost(generic=1, W=1),
+            card_type="enchantment",
+            subtype="aura",
+            keywords=["aura"],
+            instance_id=200,
+            attached_to=creature.instance_id
+        )
+        game_with_creatures.p1.battlefield.append(aura)
+
+        # Creature gains protection from enchantments
+        creature.keywords.append("protection from enchantments")
+
+        game_with_creatures.check_state()
+
+        assert aura not in game_with_creatures.p1.battlefield, "Aura should fall off"
+        assert aura in game_with_creatures.p1.graveyard, "Aura should go to graveyard"
+
+    def test_aura_falls_off_due_to_protection_from_everything(self, game_with_creatures):
+        """CR 303.4d: Aura falls off when creature gains protection from everything"""
+        creature = game_with_creatures.p1.battlefield[0]
+
+        aura = Card(
+            name="Test Aura",
+            mana_cost=ManaCost(generic=1, U=1),
+            card_type="enchantment",
+            subtype="aura",
+            keywords=["aura"],
+            instance_id=200,
+            attached_to=creature.instance_id
+        )
+        game_with_creatures.p1.battlefield.append(aura)
+
+        # Creature gains protection from everything
+        creature.keywords.append("protection from everything")
+
+        game_with_creatures.check_state()
+
+        assert aura not in game_with_creatures.p1.battlefield, "Aura should fall off"
+        assert aura in game_with_creatures.p1.graveyard, "Aura should go to graveyard"
+
+    def test_aura_stays_when_creature_has_different_protection(self, game_with_creatures):
+        """Aura should stay when creature has protection from different color"""
+        creature = game_with_creatures.p1.battlefield[0]
+
+        # Red Aura
+        aura = Card(
+            name="Flames of the Firebrand",
+            mana_cost=ManaCost(R=1),
+            card_type="enchantment",
+            subtype="aura",
+            keywords=["aura"],
+            instance_id=200,
+            attached_to=creature.instance_id
+        )
+        game_with_creatures.p1.battlefield.append(aura)
+
+        # Creature gains protection from blue (not red)
+        creature.keywords.append("protection from u")
+
+        game_with_creatures.check_state()
+
+        # Aura should stay (protection from different color)
+        assert aura in game_with_creatures.p1.battlefield, "Aura should stay"
+        assert aura not in game_with_creatures.p1.graveyard
+
 
 # =============================================================================
 # TOKEN SBAs (704.5d)
