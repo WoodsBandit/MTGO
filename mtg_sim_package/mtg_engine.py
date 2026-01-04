@@ -4540,12 +4540,17 @@ class Game:
                     else:
                         # Check if attached permanent has protection from Aura's colors or attributes
                         aura_colors = aura.mana_cost.colors()
+                        # Map color letters to full names for comparison
+                        color_map = {"w": "white", "u": "blue", "b": "black", "r": "red", "g": "green"}
+                        aura_color_names = [color_map.get(c.lower(), c.lower()) for c in aura_colors]
                         for kw in attached_perm.keywords:
                             kw_lower = kw.lower()
                             if kw_lower.startswith("protection from "):
                                 prot_from = kw_lower.replace("protection from ", "")
-                                # Check color protection
-                                if prot_from in [c.lower() for c in aura_colors]:
+                                # Normalize protection target (handle both "r" and "red")
+                                prot_normalized = color_map.get(prot_from, prot_from)
+                                # Check color protection (match full color name)
+                                if prot_normalized in aura_color_names:
                                     should_fall_off = True
                                     fall_off_reason = f"protection from {prot_from}"
                                     break
