@@ -1,0 +1,554 @@
+Adagia, Windswept Bastion
+Adamant Will
+Adaptive Automaton
+Aggressive Mammoth
+All-Fates Scroll
+All-Fates Stalker
+Alpharael, Dreaming Acolyte
+Alpharael, Stonechosen
+Ancestor Dragon
+Ancient Cornucopia
+Angel of Vitality
+Angelic Destiny
+Angelic Edict
+Annul
+Anticausal Vestige
+Arcanis the Omnipotent
+Archenemy's Charm
+Archway Angel
+Astelli Reclaimer
+Atmospheric Greenhouse
+Atomic Microsizer
+Aurelia, the Warleader
+Auxiliary Boosters
+Ayli, Eternal Pilgrim
+Azorius Guildgate
+Ball Lightning
+Ballyrush Banneret
+Battle-Rattle Shaman
+Beamsaw Prospector
+Bear Cub
+Beatrix, Loyal General
+Become Brutes
+Beyond the Quiet
+Bioengineered Future
+Biogenic Upgrade
+Biomechan Engineer
+Biosynthic Burst
+Biotech Specialist
+Bishop's Soldier
+Blade of the Swarm
+Bloodtithe Collector
+Blooming Stinger
+Bolt Bend
+Bombard
+Boros Charm
+Boros Guildgate
+Breeding Pool
+Bria, Riptide Rogue
+Brightspear Zealot
+Bristlebud Farmer
+Broodguard Elite
+Burrog Befuddler
+Bygone Colossus
+Byrke, Long Ear of the Law
+Cancel
+Carnelian Orb of Dragonkind
+Cemetery Recruitment
+Cerebral Download
+Charging Hooligan
+Charmed Sleep
+Charming Prince
+Chorale of the Void
+Chrome Companion
+Circuitous Route
+Close Encounter
+Cloud, Planet's Champion
+Cloudblazer
+Cloudsculpt Technician
+Codecracker Hound
+Collector's Cage
+Colossification
+Comet Crawler
+Command Bridge
+Confiscate
+Consult the Star Charts
+Corsair Captain
+Cosmogoyf
+Cosmogrand Zenith
+Crash Through
+Crawling Barrens
+Crossway Troublemakers
+Crow of Dark Tidings
+Crusader of Odric
+Cryogen Relic
+Cryoshatter
+Cryptic Caves
+Cut Propulsion
+Dark Endurance
+Darksteel Colossus
+Dauntless Scrapbot
+Dawnsire, Sunstar Dreadnought
+Dawnstrike Vanguard
+Dawnwing Marshal
+Deadly Brew
+Deadly Embrace
+Deadly Plot
+Deadly Riposte
+Death Baron
+Deathmark
+Debris Field Crusher
+Decode Transmissions
+Demolition Field
+Demonic Pact
+Depressurize
+Desculpting Blast
+Desecration Demon
+Devastating Onslaught
+Devout Decree
+Diamond Mare
+Dictate of Kruphix
+Dimir Guildgate
+Diplomatic Relations
+Disenchant
+Dive Down
+Divert Disaster
+Dockworker Drone
+Dragon Fodder
+Dragon Mage
+Dragonlord's Servant
+Dragonmaster Outcast
+Dread Summons
+Drill Too Deep
+Driver of the Dead
+Drix Fatemaker
+Drogskol Reaver
+Dropkick Bomber
+Druid of the Cowl
+Dryad Militant
+Dual-Sun Adepts
+Dual-Sun Technique
+Dubious Delicacy
+Dyadrine, Synthesis Amalgam
+Edge Rover
+Elegy Acolyte
+Elspeth's Smite
+Embrace Oblivion
+Emergency Eject
+Emissary Escort
+Enigma Drake
+Entropic Battlecruiser
+Esoteric Duplicator
+Eumidian Terrabotanist
+Eusocial Engineering
+Evendo, Waking Haven
+Exalted Sunborn
+Exclusion Mage
+Exosuit Savior
+Expedition Map
+Experimental Confectioner
+Extinguisher Battleship
+Faerie Slumber Party
+Faller's Faithful
+Famished Worldsire
+Feed the Swarm
+Feldon's Cane
+Felidar Cub
+Fell Gravship
+Fierce Empath
+Finale of Revelation
+Fire Elemental
+Fireshrieker
+Flame Lash
+Flashfreeze
+Flight-Deck Coordinator
+Focus Fire
+Fog Bank
+Fomori Vault
+Food Coma
+Frenzied Baloth
+Frontline War-Rager
+Full Bore
+Fumigate
+Fungal Colossus
+Fynn, the Fangbearer
+Galactic Wayfarer
+Galvanizing Sawship
+Garna, Bloodfist of Keld
+Gate Colossus
+Gatekeeper of Malakir
+Gateway Sneak
+Gene Pollinator
+Genemorph Imago
+Generous Plunderer
+Germinating Wurm
+Ghitu Lavarunner
+Giant Cindermaw
+Gigantosaurus
+Gigastorm Titan
+Gilded Lotus
+Glacier Godmaw
+Gnarlback Rhino
+Goblin Firebomb
+Goblin Oriflamme
+Goblin Smuggler
+Godless Shrine
+Golgari Guildgate
+Grand Abolisher
+Gratuitous Violence
+Gravblade Heavy
+Gravkill
+Gravpack Monoist
+Greed's Gambit
+Gruul Guildgate
+Guttersnipe
+Halana and Alena, Partners
+Haliya, Ascendant Cadet
+Haliya, Guided by Light
+Harbinger of the Tides
+Hardlight Containment
+Harmless Offering
+Harmonious Grovestrider
+Harvester of Misery
+Hedron Archive
+Hemosymbic Mite
+Herald of Faith
+Heroes' Bane
+Highborn Vampire
+Hinterland Sanctifier
+Hoarding Dragon
+Honor
+Honored Knight-Captain
+Hostile Investigator
+Hullcarver
+Hylderblade
+Hymn of the Faller
+Icecave Crasher
+Icetill Explorer
+Illvoi Galeblade
+Illvoi Infiltrator
+Illvoi Light Jammer
+Illvoi Operative
+Immersturm Predator
+Impact Tremors
+Imperious Perfect
+Infinite Guideline Station
+Ingenious Leonin
+Insatiable Skittermaw
+Inspiring Overseer
+Interceptor Mechan
+Into the Roil
+Intrepid Tenderfoot
+Intrepid Trufflesnout // Go Hog Wild
+Invasive Maneuvers
+Izzet Guildgate
+Jazal Goldmane
+Joraga Invocation
+Judgment Bolt
+Kalastria Highborn
+Kargan Dragonrider
+Kav Landseeker
+Kavaron Harrier
+Kavaron Skywarden
+Kavaron Turbodrone
+Kavaron, Memorial World
+Kindled Fury
+Kitesail Corsair
+Knight Luminary
+Knight of Grace
+Knight of Malice
+Lady of Laughter
+Larval Scoutlander
+Lashwhip Predator
+Lathliss, Dragon Queen
+Legion Extruder
+Leonin Skyhunter
+Leonin Vanguard
+Lightless Evangel
+Lightning, Security Sergeant
+Lightstall Inquisitor
+Linden, the Steadfast Queen
+Lithobraking
+Loading Zone
+Loot, the Key to Everything
+Lost Jitte
+Lost in Space
+Lotus Ring
+Lumen-Class Frigate
+Luxknight Breacher
+Lyra Dawnbringer
+Maalfeld Twins
+Maelstrom Pulse
+Magitek Scythe
+Magnigoth Sentry
+Make a Stand
+Malevolent Witchkite
+Massacre Wurm
+Maze's End
+Mazemind Tome
+Mechan Assembler
+Mechan Navigator
+Mechan Shieldmate
+Mechanozoa
+Melded Moxite
+Melek, Reforged Researcher
+Meltstrider Eulogist
+Meltstrider's Gear
+Meltstrider's Resolve
+Memorial Team Leader
+Memorial Vault
+Memory Vessel
+Mental Modulation
+Mentor of the Meek
+Midnight Reaper
+Mightform Harmonizer
+Mind Spring
+Mindsparker
+Mm'menon, Uthros Exile
+Mm'menon, the Right Hand
+Mold Adder
+Molecular Modifier
+Molten Duplication
+Moment of Craving
+Moment of Triumph
+Monoist Circuit-Feeder
+Monoist Sentry
+Moonlit Meditation
+Mortify
+Mouth of the Storm
+Mutinous Massacre
+Myojin of Night's Reach
+Mystic Archaeologist
+Mystical Teachings
+Nanoform Sentinel
+Nebula Dragon
+New Horizons
+Nexus of Becoming
+Nova Hellkite
+Nullpriest of Oblivion
+Nutrient Block
+Obliterating Bolt
+Offer Immortality
+Ogre Chitterlord
+Old Flitterfang
+Oltec Matterweaver
+Omenpath Journey
+Opt
+Orbital Plunge
+Ordeal of Nylea
+Oreplate Pangolin
+Orzhov Guildgate
+Ovika, Enigma Goliath
+Pain for All
+Pelakka Wurm
+Perigee Beckoner
+Pest Control
+Pests of Honor
+Pinnacle Emissary
+Pinnacle Kill-Ship
+Pinnacle Starcage
+Pirate's Cutlass
+Plasma Bolt
+Possibility Technician
+Prayer of Binding
+Predator Ooze
+Primal Might
+Prime Speaker Zegana
+Primeval Bounty
+Provisions Merchant
+Pull Through the Weft
+Pulsar Squadron Ace
+Pulse Tracker
+Pyromancer's Goggles
+Quantum Riddler
+Rabid Bite
+Radiant Strike
+Raging Redcap
+Ragost, Deft Gastronaut
+Rakdos Guildgate
+Ramos, Dragon Engine
+Rampaging Baloths
+Rapacious Dragon
+Ravenous Giant
+Rayblade Trooper
+Red Tiger Mechan
+Regal Caracal
+Release the Dogs
+Remnant Elemental
+Requiem Monolith
+Reroute Systems
+Rescue Skiff
+Rest in Peace
+Rig for War
+Rite of Replication
+River's Rebuke
+Rosa, Resolute White Mage
+Roving Actuator
+Rowdy Research
+Ruinous Rampage
+Rust Harvester
+Sacred Foundry
+Sami's Curiosity
+Sami, Ship's Engineer
+Sami, Wildcat Captain
+Sandstorm Salvager
+Sanguine Indulgence
+Savage Ventmaw
+Scour for Scrap
+Scout for Survivors
+Scrounge for Eternity
+Seam Rip
+Secluded Starforge
+Seedship Agrarian
+Seedship Broodtender
+Seedship Impact
+Seize the Spoils
+Selesnya Guildgate
+Selfcraft Mechan
+Sephiroth, Planet's Heir
+Serra Redeemer
+Seymour Flux
+Shattered Wings
+Shipwreck Dowser
+Simic Guildgate
+Simulacrum Synthesizer
+Singularity Rupture
+Sinister Cryologist
+Skeleton Archer
+Skyraker Giant
+Skystinger
+Slagdrill Scrapper
+Sledge-Class Seedship
+Sothera, the Supervoid
+Space-Time Anomaly
+Specimen Freighter
+Sphinx of the Final Word
+Springbloom Druid
+Squire's Lightblade
+Starbreach Whale
+Starfield Shepherd
+Starfield Vocalist
+Starfighter Pilot
+Starlight Snare
+Starport Security
+Starwinder
+Stasis Snare
+Station Monitor
+Steel Hellkite
+Steelswarm Operator
+Stomping Ground
+Storm Fleet Spy
+Storyteller Pixie
+Stromkirk Noble
+Sunset Saboteur
+Sunstar Chaplain
+Sunstar Expansionist
+Sunstar Lightsmith
+Surrak, the Hunt Caller
+Survey Mechan
+Suspicious Shambler
+Susur Secundi, Void Altar
+Susurian Dirgecraft
+Susurian Voidborn
+Swab Goblin
+Swarm Culler
+Sword of Vengeance
+Sword of Wealth and Power
+Synthesizer Labship
+Syr Alin, the Lion's Claw
+Syr Vondam, Sunstar Exemplar
+Syr Vondam, the Lucent
+Systems Override
+Tajuru Pathwarden
+Tannuk, Memorial Ensign
+Tannuk, Steadfast Second
+Tapestry Warden
+Tarnation Vista
+Taurean Mauler
+Teach by Example
+Tempest Djinn
+Temple of Abandon
+Temple of Deceit
+Temple of Enlightenment
+Temple of Epiphany
+Temple of Malady
+Temple of Malice
+Temple of Mystery
+Temple of Plenty
+Temple of Silence
+Temple of Triumph
+Temporal Intervention
+Terminal Velocity
+Terrapact Intimidator
+Terrasymbiosis
+Territorial Bruntar
+Territory Forge
+Terror of Mount Velus
+Tezzeret, Cruel Captain
+Thaumaton Torpedo
+Thawbringer
+The Dominion Bracelet
+The Endstone
+The Eternity Elevator
+The Seriema
+Thieving Otter
+Thornweald Archer
+Thrumming Hivepool
+Timeline Culler
+Tomik, Wielder of Law
+Torpor Orb
+Tractor Beam
+Tragic Trajectory
+Transmutation Font
+Tribute to Hunger
+Trygon Predator
+Twinblade Paladin
+Ultima Weapon
+Ultimecia, Temporal Threat
+Umbral Collar Zealot
+Undying Malice
+Unflinching Courage
+Unravel
+Unsummon
+Untamed Hunger
+Uthros Psionicist
+Uthros Scanship
+Uthros, Titanic Godcore
+Valorous Stance
+Vampire Interloper
+Vampire Neonate
+Vampire Spawn
+Vampiric Rites
+Vaultborn Tyrant
+Vaultguard Trooper
+Venom Connoisseur
+Viashino Pyromancer
+Vile Entomber
+Virulent Silencer
+Virus Beetle
+Vizier of the Menagerie
+Voidforged Titan
+Voja, Jaws of the Conclave
+Volley Veteran
+Voracious Greatshark
+Vote Out
+Warmaker Gunship
+Watery Grave
+Weapons Manufacturing
+Wedgelight Rammer
+Weftblade Enhancer
+Weftstalker Ardent
+Weftwalking
+Wildborn Preserver
+Wildheart Invoker
+Wildwood Mentor
+Wilt-Leaf Liege
+Wishclaw Talisman
+Worldwalker Helm
+Wurmwall Sweeper
+Xande, Dark Mage
+Xu-Ifit, Osteoharmonist
+Zealous Display
+Zero Point Ballad
+Zetalpa, Primal Dawn
+Zookeeper Mechan
