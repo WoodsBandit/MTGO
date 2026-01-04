@@ -19,8 +19,9 @@ results = run_match_from_files("deck1.txt", "deck2.txt", matches=5)
 import random
 import re
 from dataclasses import dataclass, field
-from typing import List, Dict, Optional, Tuple, Any, Set
+from typing import List, Dict, Optional, Tuple, Any, Set, Callable, Union
 from card_database import get_card_data, CARD_DATABASE
+from layer_system import ContinuousEffect, LayerSystem
 
 ENGINE_VERSION = "3.0"
 
@@ -242,6 +243,10 @@ class Card:
     # Saga fields
     chapters: List[str] = field(default_factory=list)  # Chapter abilities: ["effect1", "effect2", "effect3"]
 
+    # Control tracking (Rule 108.4)
+    owner: int = 0  # Player ID who started with the card (never changes)
+    control_effects: List['ControlEffect'] = field(default_factory=list)  # Stack of control effects (Layer 2)
+
     # MDFC (Modal Double-Faced Card) fields
     is_mdfc: bool = False  # True if this card has two playable faces
     mdfc_back: Optional['Card'] = None  # Reference to back face (only set on front face)
@@ -276,6 +281,8 @@ class Card:
             on_adventure=self.on_adventure,
             crew=self.crew, is_crewed=self.is_crewed,
             chapters=self.chapters.copy(),
+            owner=self.owner,
+            control_effects=[],  # Control effects don't copy (each copy starts fresh)
             is_mdfc=self.is_mdfc, mdfc_played_as=self.mdfc_played_as,
             mdfc_enters_tapped=self.mdfc_enters_tapped
         )
@@ -371,6 +378,243 @@ def get_attachments(creature: Card, battlefield: List['Card']) -> List['Card']:
     return [c for c in battlefield if c.attached_to == creature.instance_id]
 
 
+# =============================================================================
+# COPY EFFECTS SYSTEM (MTG Rule 707)
+# =============================================================================
+
+# Global ID counter for copy effects (used when Game instance not available)
+_copy_id_counter = 10000
+
+
+def _generate_copy_id() -> int:
+    """Generate a unique ID for copies when Game.next_id isn't available."""
+    global _copy_id_counter
+    _copy_id_counter += 1
+    return _copy_id_counter
+
+
+def create_copy(original: Card, modifications: List[Callable[[Card], None]] = None,
+                instance_id: int = None) -> Card:
+    """
+    Rule 707: Create a copy of a card/permanent using only copiable values.
+
+    Rule 707.2 - Copiable values are:
+    - Name, mana cost, color indicator, card type, subtype, supertype
+    - Rules text (abilities), power/toughness, loyalty
+
+    Rule 707.2 - NOT copied:
+    - Counters, stickers, attached objects, effects modifying characteristics
+    - Outside-the-game status, tapped/untapped, phased status
+    - Face-up/face-down status, any other non-copiable information
+
+    Rule 707.3: Copy effects don't copy whether an object is tapped/untapped,
+    phased in/out, face up/down, or the counters on it.
+
+    Rule 707.9: Copy effects copying a copy use the copiable values of the
+    original object that was copied (copies are not recursive).
+
+    Args:
+        original: The card/permanent to copy
+        modifications: Optional list of modification functions to apply after copying
+                      (for "copy except..." effects like Spark Double, Phantasmal Image)
+        instance_id: Optional specific instance_id to assign (otherwise generates one)
+
+    Returns:
+        A new Card instance with copied copiable values
+
+    Example modifications for common clone effects:
+        # Spark Double - not legendary, enters with +1/+1 counter
+        def spark_double_mod(copy):
+            copy.counters["+1/+1"] = copy.counters.get("+1/+1", 0) + 1
+
+        # Phantasmal Image - is an Illusion, has sacrifice trigger
+        def phantasmal_mod(copy):
+            copy.subtype = "illusion"
+            if "sacrifice_when_targeted" not in copy.abilities:
+                copy.abilities.append("sacrifice_when_targeted")
+    """
+    # Determine if original is an MDFC and handle Rule 707.8
+    # (copying a double-faced card copies only the face that's up)
+    source = original
+    if original.is_mdfc and original.mdfc_played_as == "back" and original.mdfc_front:
+        # If played as back, we're copying the back face characteristics
+        # (but the card object already has those values when mdfc_played_as is set)
+        pass  # Use current values
+
+    # Rule 707.2: Copy only copiable values
+    copy = Card(
+        # Core copiable values
+        name=source.name,
+        mana_cost=source.mana_cost.copy() if source.mana_cost else ManaCost(),
+        card_type=source.card_type,
+        subtype=source.subtype,
+
+        # Power/toughness (use base values)
+        power=source.power,
+        toughness=source.toughness,
+
+        # Loyalty for planeswalkers
+        loyalty=source.loyalty,
+
+        # Abilities and keywords (copiable rules text)
+        keywords=source.keywords.copy() if source.keywords else [],
+        abilities=source.abilities.copy() if source.abilities else [],
+        loyalty_abilities=source.loyalty_abilities.copy() if source.loyalty_abilities else [],
+
+        # Land mana production
+        produces=source.produces.copy() if source.produces else [],
+
+        # Aura/Equipment grants (part of rules text)
+        grants=source.grants.copy() if source.grants else [],
+        equip_cost=source.equip_cost,
+        return_to_hand=source.return_to_hand,
+
+        # Modal/kicker characteristics (part of rules text)
+        modes=source.modes.copy() if source.modes else [],
+        choose_two=source.choose_two,
+        kicker=source.kicker,
+        multikicker=source.multikicker,
+        if_kicked=source.if_kicked.copy() if source.if_kicked else [],
+
+        # Alternative costs (part of rules text)
+        flashback=source.flashback,
+        escape=source.escape,
+        escape_exile=source.escape_exile,
+        overload=source.overload,
+        adventure=source.adventure.copy() if source.adventure else None,
+
+        # Vehicle crew (part of rules text)
+        crew=source.crew,
+
+        # Saga chapters (part of rules text)
+        chapters=source.chapters.copy() if source.chapters else [],
+
+        # Instance-specific values (NOT copied, use defaults)
+        instance_id=instance_id if instance_id is not None else _generate_copy_id(),
+        is_tapped=False,  # Rule 707.3: Not copied
+        damage_marked=0,  # Rule 707.3: Not copied
+        summoning_sick=True,  # New permanent has summoning sickness
+        counters={},  # Rule 707.3: Counters not copied
+        controller=0,  # Set by caller
+        activated_this_turn=False,
+        is_token=False,  # Set by caller if creating token copy
+        attached_to=None,  # Rule 707.3: Not copied
+        deathtouch_damage=False,
+        phased_out=False,  # Rule 707.3: Not copied
+        regenerate_shield=0,
+        shield_counters=0,
+        on_adventure=False,
+        is_crewed=False,
+
+        # MDFC - copy doesn't preserve double-faced nature by default
+        is_mdfc=False,
+        mdfc_played_as="",
+        mdfc_enters_tapped=False
+    )
+
+    # Rule 707.10: Apply copy modifications (for "copy except..." effects)
+    if modifications:
+        for mod in modifications:
+            mod(copy)
+
+    return copy
+
+
+def copy_spell_on_stack(original: Card, modifications: List[Callable[[Card], None]] = None,
+                        instance_id: int = None) -> Card:
+    """
+    Rule 707.10: Copy a spell on the stack.
+
+    Similar to create_copy but for spells being copied (e.g., Fork, Twincast).
+    The copy is created on the stack and can have new targets chosen.
+
+    Args:
+        original: The spell being copied
+        modifications: Optional modifications to the copy
+        instance_id: Optional specific instance_id
+
+    Returns:
+        A new Card representing the spell copy
+    """
+    return create_copy(original, modifications, instance_id)
+
+
+# Common modification functions for clone effects
+def modification_not_legendary(copy: Card) -> None:
+    """
+    Modification for Spark Double and similar - removes legendary status.
+    Note: In this implementation, legendary is part of card_type string.
+    """
+    if "legendary" in copy.card_type.lower():
+        copy.card_type = copy.card_type.lower().replace("legendary ", "").replace("legendary", "")
+        copy.card_type = copy.card_type.strip()
+        if not copy.card_type:
+            copy.card_type = "creature"
+
+
+def modification_add_counter(counter_type: str, amount: int = 1) -> Callable[[Card], None]:
+    """
+    Factory for modifications that add counters (like Spark Double's +1/+1).
+
+    Args:
+        counter_type: Type of counter ("+1/+1", "-1/-1", "loyalty", etc.)
+        amount: Number of counters to add
+
+    Returns:
+        A modification function
+    """
+    def mod(copy: Card) -> None:
+        copy.counters[counter_type] = copy.counters.get(counter_type, 0) + amount
+    return mod
+
+
+def modification_add_ability(ability: str) -> Callable[[Card], None]:
+    """
+    Factory for modifications that add abilities (like Phantasmal Image).
+
+    Args:
+        ability: The ability string to add
+
+    Returns:
+        A modification function
+    """
+    def mod(copy: Card) -> None:
+        if ability not in copy.abilities:
+            copy.abilities.append(ability)
+    return mod
+
+
+def modification_change_subtype(new_subtype: str) -> Callable[[Card], None]:
+    """
+    Factory for modifications that change subtype.
+
+    Args:
+        new_subtype: The new subtype
+
+    Returns:
+        A modification function
+    """
+    def mod(copy: Card) -> None:
+        copy.subtype = new_subtype
+    return mod
+
+
+def modification_add_keyword(keyword: str) -> Callable[[Card], None]:
+    """
+    Factory for modifications that add keywords.
+
+    Args:
+        keyword: The keyword to add
+
+    Returns:
+        A modification function
+    """
+    def mod(copy: Card) -> None:
+        if keyword.lower() not in [k.lower() for k in copy.keywords]:
+            copy.keywords.append(keyword)
+    return mod
+
+
 @dataclass
 class StackItem:
     """Represents a spell or ability on the stack"""
@@ -401,6 +645,363 @@ class StackItem:
         if self.card.mana_cost.has_x():
             return base_cmc + (self.card.mana_cost.X * self.x_value)
         return base_cmc
+
+
+# =============================================================================
+# CONTROL-CHANGING EFFECTS SYSTEM (MTG Rule 108.4, Layer 2)
+# =============================================================================
+
+@dataclass
+class ControlEffect:
+    """
+    Represents a control-changing effect (Layer 2 in the layer system).
+
+    Per Rule 108.4: Each object has a controller, which is normally
+    the player who put it onto the stack or battlefield, but control
+    can change via control-changing effects.
+
+    Control effects stack - the most recent (highest timestamp) wins.
+    When an effect ends, control reverts to the next effect in the stack,
+    or to the owner if no effects remain.
+    """
+    new_controller: int  # Player ID of the new controller
+    source_id: int  # Instance ID of the card causing the control change
+    duration: str  # 'permanent', 'end_of_turn', 'until_leaves', 'until_source_leaves'
+    timestamp: int  # Used to determine which effect wins (Layer 2 timestamp order)
+
+    def __repr__(self) -> str:
+        return f"ControlEffect(to=P{self.new_controller}, src={self.source_id}, dur={self.duration}, ts={self.timestamp})"
+
+
+class ControlChangeManager:
+    """
+    Manages control-changing effects for permanents.
+
+    Implements Layer 2 of the layer system where control is determined.
+    Multiple control effects stack, with the most recent (highest timestamp) winning.
+
+    Common control-changing cards:
+    - Mind Control: Permanent control (aura-based, ends when aura leaves)
+    - Act of Treason: Until end of turn, also untaps and grants haste
+    - Agent of Treachery: Permanent control via ETB trigger
+    - Claim the Firstborn: Until end of turn for low-MV creatures
+    """
+
+    def __init__(self, game: 'Game'):
+        self.game = game
+        self.timestamp_counter = 0
+
+    def get_next_timestamp(self) -> int:
+        """Get the next timestamp for ordering effects."""
+        self.timestamp_counter += 1
+        return self.timestamp_counter
+
+    def change_control(self, permanent: Card, new_controller_id: int,
+                       source: Card, duration: str = 'permanent') -> bool:
+        """
+        Change control of a permanent.
+
+        Args:
+            permanent: The permanent to change control of
+            new_controller_id: Player ID of the new controller (1 or 2)
+            source: The card causing the control change
+            duration: One of 'permanent', 'end_of_turn', 'until_leaves', 'until_source_leaves'
+
+        Returns:
+            True if control was successfully changed
+        """
+        if new_controller_id not in [1, 2]:
+            return False
+
+        old_controller_id = permanent.controller
+
+        # Create the control effect
+        effect = ControlEffect(
+            new_controller=new_controller_id,
+            source_id=source.instance_id,
+            duration=duration,
+            timestamp=self.get_next_timestamp()
+        )
+        permanent.control_effects.append(effect)
+
+        # Update the controller
+        self._update_controller(permanent)
+
+        # Log the control change if it actually changed
+        if permanent.controller != old_controller_id:
+            duration_text = {
+                'permanent': 'permanently',
+                'end_of_turn': 'until end of turn',
+                'until_leaves': 'until it leaves',
+                'until_source_leaves': f'while {source.name} remains'
+            }.get(duration, duration)
+            self.game.log.log(f"    P{new_controller_id} gains control of {permanent.name} {duration_text}")
+
+        return True
+
+    def end_of_turn_cleanup(self):
+        """
+        Remove 'until end of turn' control effects at end of turn.
+        Called during the cleanup step.
+        """
+        for player in [self.game.p1, self.game.p2]:
+            for permanent in player.battlefield[:]:  # Slice to avoid modification during iteration
+                if not permanent.control_effects:
+                    continue
+
+                # Remove end_of_turn effects
+                original_len = len(permanent.control_effects)
+                permanent.control_effects = [
+                    e for e in permanent.control_effects
+                    if e.duration != 'end_of_turn'
+                ]
+
+                # If we removed any effects, update controller
+                if len(permanent.control_effects) != original_len:
+                    self._update_controller(permanent)
+
+    def on_permanent_leaves(self, source: Card):
+        """
+        Remove control effects when their source leaves the battlefield.
+
+        This handles:
+        - Aura-based control (Mind Control falls off when Mind Control leaves)
+        - 'until_source_leaves' effects (e.g., Sower of Temptation)
+
+        Args:
+            source: The permanent that is leaving the battlefield
+        """
+        for player in [self.game.p1, self.game.p2]:
+            for permanent in player.battlefield[:]:
+                if not permanent.control_effects:
+                    continue
+
+                original_len = len(permanent.control_effects)
+                permanent.control_effects = [
+                    e for e in permanent.control_effects
+                    if not (e.source_id == source.instance_id or
+                           (e.duration == 'until_source_leaves' and e.source_id == source.instance_id))
+                ]
+
+                # If we removed any effects, update controller
+                if len(permanent.control_effects) != original_len:
+                    self._update_controller(permanent)
+
+    def _update_controller(self, permanent: Card):
+        """
+        Recalculate and update the controller based on active control effects.
+
+        Per Layer 2 timestamp ordering, the most recent effect wins.
+        If no effects, controller reverts to owner.
+        """
+        if not permanent.control_effects:
+            # No control effects - controller is owner
+            target_controller = permanent.owner
+        else:
+            # Latest timestamp effect determines controller (Layer 2)
+            latest = max(permanent.control_effects, key=lambda e: e.timestamp)
+            target_controller = latest.new_controller
+
+        # Only move if controller actually changed
+        if permanent.controller != target_controller:
+            self._move_permanent(permanent, target_controller)
+
+    def _move_permanent(self, permanent: Card, new_controller_id: int):
+        """
+        Move a permanent between players' battlefields.
+
+        Args:
+            permanent: The permanent to move
+            new_controller_id: Player ID of the new controller
+        """
+        old_controller_id = permanent.controller
+        old_player = self.game.p1 if old_controller_id == 1 else self.game.p2
+        new_player = self.game.p1 if new_controller_id == 1 else self.game.p2
+
+        # Remove from old controller's battlefield
+        if permanent in old_player.battlefield:
+            old_player.battlefield.remove(permanent)
+
+        # Add to new controller's battlefield
+        if permanent not in new_player.battlefield:
+            new_player.battlefield.append(permanent)
+
+        # Update the controller field
+        permanent.controller = new_controller_id
+
+        self.game.log.log(f"    {permanent.name} moved to P{new_controller_id}'s battlefield")
+
+    def get_controller(self, permanent: Card) -> int:
+        """Get the current controller of a permanent."""
+        return permanent.controller
+
+    def get_owner(self, permanent: Card) -> int:
+        """Get the owner of a card (never changes)."""
+        return permanent.owner
+
+    def revert_to_owner(self, permanent: Card):
+        """
+        Revert control of a permanent to its owner.
+        Called when a card changes zones (owner always gets it back).
+        """
+        permanent.control_effects.clear()
+        if permanent.controller != permanent.owner:
+            self._move_permanent(permanent, permanent.owner)
+
+    def threaten_effect(self, permanent: Card, new_controller_id: int, source: Card):
+        """
+        Apply a "threaten" effect like Act of Treason.
+
+        This is a convenience method that:
+        1. Gains control until end of turn
+        2. Untaps the permanent
+        3. Grants haste (so it can attack)
+
+        Cards this implements:
+        - Act of Treason: {2}{R} - Gain control of target creature until EOT. Untap, gains haste.
+        - Claim the Firstborn: {R} - Gain control of creature with MV 3 or less until EOT. Untap, gains haste.
+        - Mark of Mutiny: {2}{R} - Gain control, put +1/+1 counter, untap, gains haste.
+        - Traitorous Blood: {1}{R}{R} - Same as Act of Treason + gains trample.
+        """
+        # Gain control until end of turn
+        self.change_control(permanent, new_controller_id, source, duration='end_of_turn')
+
+        # Untap it
+        if permanent.is_tapped:
+            permanent.is_tapped = False
+            self.game.log.log(f"    {permanent.name} untaps")
+
+        # Grant haste (remove summoning sickness)
+        permanent.summoning_sick = False
+        if "haste" not in [kw.lower() for kw in permanent.keywords]:
+            permanent.keywords.append("haste")
+            self.game.log.log(f"    {permanent.name} gains haste until end of turn")
+
+    def aura_control_effect(self, permanent: Card, aura: Card, new_controller_id: int):
+        """
+        Apply an Aura-based control effect like Mind Control.
+
+        The control effect ends when the Aura leaves the battlefield.
+
+        Cards this implements:
+        - Mind Control: {3}{U}{U} - You control enchanted creature.
+        - Control Magic: {2}{U}{U} - You control enchanted creature.
+        - Volition Reins: {3}{U}{U}{U} - Gain control of target permanent.
+        """
+        self.change_control(permanent, new_controller_id, aura, duration='until_source_leaves')
+
+
+# =============================================================================
+# REPLACEMENT EFFECTS SYSTEM (MTG Rule 614)
+# =============================================================================
+
+@dataclass
+class GameEvent:
+    """
+    Represents a game event that can be modified by replacement effects.
+
+    Event types:
+    - 'die': A creature/permanent would die (go to graveyard from battlefield)
+    - 'etb': A permanent would enter the battlefield
+    - 'draw': A player would draw a card
+    - 'damage': Damage would be dealt
+    - 'discard': A card would be discarded
+    - 'counter': A counter would be placed
+    - 'zone_change': A card would change zones (general)
+    """
+    event_type: str  # 'die', 'etb', 'damage', 'draw', 'discard', 'counter', 'zone_change'
+    source: Optional[Card] = None  # The source causing the event (damage source, etc.)
+    card: Optional[Card] = None  # The card affected (creature dying, entering, etc.)
+    player: Optional['Player'] = None  # The player affected
+    controller: Optional['Player'] = None  # Controller of the affected card
+
+    # Event-specific data
+    destination_zone: str = ""  # For zone changes: 'graveyard', 'exile', 'hand', 'library'
+    origin_zone: str = ""  # Where the card is coming from
+    damage_amount: int = 0  # For damage events
+    damage_target: Any = None  # Target of damage (creature, player, planeswalker)
+    counter_type: str = ""  # For counter events: '+1/+1', 'loyalty', etc.
+    counter_amount: int = 0  # Number of counters
+    draw_count: int = 0  # Number of cards to draw
+
+    # Replacement tracking
+    is_cancelled: bool = False  # If True, event doesn't happen at all
+    is_modified: bool = False  # If True, event was modified by a replacement
+    replacement_data: Dict[str, Any] = field(default_factory=dict)  # Modified event data
+    applied_replacements: List[str] = field(default_factory=list)  # IDs of applied effects
+
+    # ETB-specific
+    etb_tapped: bool = False  # If True, enters tapped
+    etb_with_counters: Dict[str, int] = field(default_factory=dict)  # Counters to enter with
+    etb_trigger_count: int = 1  # Number of times ETB triggers (Panharmonicon = 2)
+
+    def copy(self) -> 'GameEvent':
+        """Create a copy of this event"""
+        new_event = GameEvent(
+            event_type=self.event_type,
+            source=self.source,
+            card=self.card,
+            player=self.player,
+            controller=self.controller,
+            destination_zone=self.destination_zone,
+            origin_zone=self.origin_zone,
+            damage_amount=self.damage_amount,
+            damage_target=self.damage_target,
+            counter_type=self.counter_type,
+            counter_amount=self.counter_amount,
+            draw_count=self.draw_count,
+            is_cancelled=self.is_cancelled,
+            is_modified=self.is_modified,
+            replacement_data=self.replacement_data.copy(),
+            applied_replacements=self.applied_replacements.copy(),
+            etb_tapped=self.etb_tapped,
+            etb_with_counters=self.etb_with_counters.copy(),
+            etb_trigger_count=self.etb_trigger_count,
+        )
+        return new_event
+
+
+@dataclass
+class ReplacementEffect:
+    """
+    Represents a replacement effect per MTG Rule 614.
+
+    Replacement effects modify events before they happen:
+    - "If X would happen, Y happens instead"
+    - "If X would happen, X happens with modifications"
+
+    Key rules:
+    - 614.2: Each replacement can only apply once per event
+    - 614.6: Self-replacement effects apply first
+    - 614.7: For multiple effects, affected player/controller chooses order
+    """
+    source: Card  # The card creating this replacement effect
+    effect_id: str  # Unique identifier (source.instance_id + effect name)
+    event_type: str  # 'die', 'etb', 'damage', 'draw', 'discard', 'counter', 'zone_change'
+    condition: Callable[['GameEvent', 'Game'], bool]  # Checks if this effect applies
+    replacement: Callable[['GameEvent', 'Game'], 'GameEvent']  # Modifies the event
+    self_replacement: bool = False  # Rule 614.6: Self-replacements apply first
+    controller_id: int = 0  # Player who controls this effect (for ordering choices)
+    description: str = ""  # Human-readable description for logging
+
+    def applies_to(self, event: 'GameEvent', game: 'Game') -> bool:
+        """Check if this replacement effect applies to the given event"""
+        # Check event type matches
+        if self.event_type != event.event_type:
+            return False
+        # Check if already applied to this event (Rule 614.2)
+        if self.effect_id in event.applied_replacements:
+            return False
+        # Check condition
+        return self.condition(event, game)
+
+    def apply(self, event: 'GameEvent', game: 'Game') -> 'GameEvent':
+        """Apply this replacement effect to the event"""
+        # Mark as applied (Rule 614.2 - can only apply once per event)
+        event.applied_replacements.append(self.effect_id)
+        event.is_modified = True
+        # Apply the replacement
+        return self.replacement(event, game)
 
 
 @dataclass
@@ -2309,14 +2910,18 @@ class Game:
         self.next_stack_id = 1
         self.stack: List[StackItem] = []  # The spell stack (LIFO)
         self.trigger_queue: List[Tuple[str, Card, Player, Any]] = []  # (trigger_type, source, controller, data)
+        self.replacement_effects: List[ReplacementEffect] = []  # Active replacement effects (Rule 614)
+        self.control_manager = ControlChangeManager(self)  # Control-changing effects (Layer 2)
+        self.layer_system = LayerSystem(self)  # Continuous effects layer system (Rule 613)
 
         self.p1 = Player(1, name1, arch1)
         self.p2 = Player(2, name2, arch2)
-        
+
         for c in cards1:
             card = c.copy()
             card.instance_id = self.next_id
             card.controller = 1
+            card.owner = 1  # Owner is set at game start and never changes
             self.next_id += 1
             self.p1.library.append(card)
         
@@ -2324,6 +2929,7 @@ class Game:
             card = c.copy()
             card.instance_id = self.next_id
             card.controller = 2
+            card.owner = 2  # Owner is set at game start and never changes
             self.next_id += 1
             self.p2.library.append(card)
         
@@ -2339,7 +2945,170 @@ class Game:
     
     def opponent(self) -> Player:
         return self.p2 if self.active_id == 1 else self.p1
-    
+
+    # =========================================================================
+    # REPLACEMENT EFFECTS SYSTEM (MTG Rule 614)
+    # =========================================================================
+
+    def register_replacement_effect(self, effect: ReplacementEffect) -> None:
+        """Register a replacement effect to be checked for future events."""
+        self.replacement_effects.append(effect)
+        self.log.log(f"    [Replacement] Registered: {effect.description}")
+
+    def unregister_replacement_effect(self, source: Card) -> None:
+        """Remove all replacement effects from a source (when it leaves play)."""
+        before_count = len(self.replacement_effects)
+        self.replacement_effects = [
+            e for e in self.replacement_effects
+            if e.source.instance_id != source.instance_id
+        ]
+        removed = before_count - len(self.replacement_effects)
+        if removed > 0:
+            self.log.log(f"    [Replacement] Removed {removed} effect(s) from {source.name}")
+
+    def process_event_with_replacements(self, event: GameEvent, affected_player: Player) -> GameEvent:
+        """
+        Process an event through all applicable replacement effects.
+        Per MTG Rule 614: self-replacements first, then affected player chooses order.
+        """
+        max_iterations = 20
+        iteration = 0
+        while iteration < max_iterations:
+            iteration += 1
+            applicable: List[ReplacementEffect] = []
+            for effect in self.replacement_effects:
+                if effect.applies_to(event, self):
+                    applicable.append(effect)
+            if not applicable:
+                break
+            self_replacements = [
+                e for e in applicable
+                if e.self_replacement and event.card and e.source.instance_id == event.card.instance_id
+            ]
+            other_replacements = [e for e in applicable if e not in self_replacements]
+            for effect in self_replacements:
+                event = effect.apply(event, self)
+                self.log.log(f"    [Replacement] Applied (self): {effect.description}")
+                if event.is_cancelled:
+                    return event
+            if other_replacements:
+                other_replacements.sort(
+                    key=lambda e: (0 if e.controller_id == affected_player.player_id else 1, e.source.instance_id)
+                )
+                effect = other_replacements[0]
+                event = effect.apply(event, self)
+                self.log.log(f"    [Replacement] Applied: {effect.description}")
+                if event.is_cancelled:
+                    return event
+        if iteration >= max_iterations:
+            self.log.log(f"    [Warning] Replacement effect loop limit reached")
+        return event
+
+    def create_die_event(self, creature: Card, controller: Player, destination: str = "graveyard") -> GameEvent:
+        """Create a 'die' event for a creature/permanent about to die."""
+        return GameEvent(event_type='die', card=creature, controller=controller,
+                        origin_zone='battlefield', destination_zone=destination)
+
+    def create_etb_event(self, card: Card, controller: Player, source: Optional[Card] = None) -> GameEvent:
+        """Create an ETB event for a permanent about to enter the battlefield."""
+        return GameEvent(event_type='etb', card=card, controller=controller, source=source,
+                        origin_zone='stack' if card.card_type not in ['land'] else 'hand',
+                        destination_zone='battlefield')
+
+    def create_draw_event(self, player: Player, count: int = 1, source: Optional[Card] = None) -> GameEvent:
+        """Create a draw event for a player about to draw cards."""
+        return GameEvent(event_type='draw', player=player, source=source, draw_count=count)
+
+    def create_damage_event(self, source: Card, target: Any, amount: int) -> GameEvent:
+        """Create a damage event for damage about to be dealt."""
+        target_player = target if isinstance(target, Player) else None
+        target_card = target if isinstance(target, Card) else None
+        return GameEvent(event_type='damage', source=source, card=target_card,
+                        player=target_player, damage_target=target, damage_amount=amount)
+
+    def create_discard_event(self, card: Card, player: Player, source: Optional[Card] = None) -> GameEvent:
+        """Create a discard event for a card about to be discarded."""
+        return GameEvent(event_type='discard', card=card, player=player, source=source,
+                        origin_zone='hand', destination_zone='graveyard')
+
+    def create_rest_in_peace_effect(self, source: Card, controller_id: int) -> ReplacementEffect:
+        """Rest in Peace: exile instead of graveyard."""
+        def condition(event: GameEvent, game: 'Game') -> bool:
+            return event.destination_zone == 'graveyard' and event.card is not None
+        def replacement(event: GameEvent, game: 'Game') -> GameEvent:
+            event.destination_zone = 'exile'
+            return event
+        return ReplacementEffect(source=source, effect_id=f"{source.instance_id}_rest_in_peace",
+            event_type='die', condition=condition, replacement=replacement,
+            self_replacement=False, controller_id=controller_id,
+            description=f"{source.name}: exile instead of graveyard")
+
+    def create_leyline_of_the_void_effect(self, source: Card, controller_id: int) -> ReplacementEffect:
+        """Leyline of the Void: exile opponent's cards instead of graveyard."""
+        def condition(event: GameEvent, game: 'Game') -> bool:
+            if event.destination_zone != 'graveyard' or event.card is None:
+                return False
+            if event.controller is None:
+                return False
+            return event.controller.player_id != controller_id
+        def replacement(event: GameEvent, game: 'Game') -> GameEvent:
+            event.destination_zone = 'exile'
+            return event
+        return ReplacementEffect(source=source, effect_id=f"{source.instance_id}_leyline_void",
+            event_type='die', condition=condition, replacement=replacement,
+            self_replacement=False, controller_id=controller_id,
+            description=f"{source.name}: exile opponent's cards instead of graveyard")
+
+    def create_panharmonicon_effect(self, source: Card, controller_id: int) -> ReplacementEffect:
+        """Panharmonicon: ETB triggers twice for artifacts/creatures."""
+        def condition(event: GameEvent, game: 'Game') -> bool:
+            if event.event_type != 'etb' or event.card is None:
+                return False
+            if event.card.card_type not in ['artifact', 'creature']:
+                return False
+            if event.controller is None or event.controller.player_id != controller_id:
+                return False
+            return True
+        def replacement(event: GameEvent, game: 'Game') -> GameEvent:
+            event.etb_trigger_count += 1
+            return event
+        return ReplacementEffect(source=source, effect_id=f"{source.instance_id}_panharmonicon",
+            event_type='etb', condition=condition, replacement=replacement,
+            self_replacement=False, controller_id=controller_id,
+            description=f"{source.name}: ETB triggers twice for artifacts/creatures")
+
+    def create_damage_prevention_effect(self, source: Card, controller_id: int,
+                                        prevent_amount: int = -1) -> ReplacementEffect:
+        """Damage prevention effect. -1 means prevent all."""
+        def condition(event: GameEvent, game: 'Game') -> bool:
+            return event.event_type == 'damage' and event.damage_amount > 0
+        def replacement(event: GameEvent, game: 'Game') -> GameEvent:
+            if prevent_amount == -1:
+                event.damage_amount = 0
+            else:
+                event.damage_amount = max(0, event.damage_amount - prevent_amount)
+            return event
+        desc = "prevent all damage" if prevent_amount == -1 else f"prevent {prevent_amount} damage"
+        return ReplacementEffect(source=source, effect_id=f"{source.instance_id}_damage_prevent",
+            event_type='damage', condition=condition, replacement=replacement,
+            self_replacement=False, controller_id=controller_id, description=f"{source.name}: {desc}")
+
+    def create_damage_doubling_effect(self, source: Card, controller_id: int) -> ReplacementEffect:
+        """Damage doubling effect (like Furnace of Rath)."""
+        def condition(event: GameEvent, game: 'Game') -> bool:
+            return event.event_type == 'damage' and event.damage_amount > 0
+        def replacement(event: GameEvent, game: 'Game') -> GameEvent:
+            event.damage_amount *= 2
+            return event
+        return ReplacementEffect(source=source, effect_id=f"{source.instance_id}_damage_double",
+            event_type='damage', condition=condition, replacement=replacement,
+            self_replacement=False, controller_id=controller_id,
+            description=f"{source.name}: double all damage")
+
+    # =========================================================================
+    # CARD DRAWING
+    # =========================================================================
+
     def draw(self, player: Player, n: int = 1) -> bool:
         """
         Draw n cards from player's library.
@@ -2724,11 +3493,27 @@ class Game:
                 self.log.log(f"    Landfall: draws {drawn.name}")
 
     def fire_etb(self, creature: Card, controller: Player):
-        """Fire ETB triggers for a creature entering the battlefield"""
+        """
+        Fire ETB triggers for a creature entering the battlefield.
+        Uses the replacement effects system to check for trigger modifiers (Panharmonicon, etc.)
+        """
+        # Create ETB event and process through replacement effects
+        etb_event = self.create_etb_event(creature, controller)
+        processed_event = self.process_event_with_replacements(etb_event, controller)
+
+        # If event was cancelled, don't fire triggers
+        if processed_event.is_cancelled:
+            return
+
+        # Determine how many times to queue the trigger (Panharmonicon effect)
+        trigger_count = processed_event.etb_trigger_count
+
         for c in controller.battlefield:
             if any("etb" in ab.lower() or "enters" in ab.lower() for ab in c.abilities):
                 if c.instance_id == creature.instance_id:
-                    self.queue_trigger("etb", c, controller, creature)
+                    # Queue trigger multiple times if Panharmonicon-style effect is active
+                    for _ in range(trigger_count):
+                        self.queue_trigger("etb", c, controller, creature)
 
     def fire_dies(self, creature: Card, controller: Player, last_known_info: dict = None):
         """Fire dies triggers with last known information (CR 603.10)"""
@@ -2909,23 +3694,78 @@ class Game:
 
     def get_creature_with_bonuses(self, creature: Card, battlefield: List[Card]) -> Tuple[int, int, List[str]]:
         """
-        Get a creature's effective power/toughness including attachment bonuses.
+        Get a creature's effective power/toughness including all continuous effects.
+
+        This method uses the Layer System (Rule 613) when active effects exist,
+        otherwise falls back to the simpler attachment-based calculation.
+
+        The layer system applies effects in order:
+        - Layer 7a: Characteristic-defining abilities (Tarmogoyf)
+        - Layer 7b: Set P/T to specific value (Ovinize, Turn to Frog)
+        - Layer 7c: +1/+1 and -1/-1 counters
+        - Layer 7d: Effects that modify P/T (+2/+2 from equipment, anthems)
+        - Layer 7e: P/T switching effects
 
         Returns:
             Tuple of (effective_power, effective_toughness, all_keywords)
         """
-        base_power = creature.eff_power()
-        base_toughness = creature.eff_toughness()
-        base_keywords = list(creature.keywords)
+        # Check if there are any active layer effects
+        if self.layer_system.effects:
+            # Use the full layer system for characteristic calculation
+            chars = self.layer_system.calculate_characteristics(creature)
+            power = chars.get('power', creature.power)
+            toughness = chars.get('toughness', creature.toughness)
+            keywords = chars.get('keywords', list(creature.keywords))
 
-        p_bonus, t_bonus, granted_kws = apply_attached_bonuses(creature, battlefield)
+            # Still need to apply attachment bonuses for equipment/auras
+            # that haven't been registered as layer effects
+            p_bonus, t_bonus, granted_kws = apply_attached_bonuses(creature, battlefield)
 
-        return (base_power + p_bonus, base_toughness + t_bonus, base_keywords + granted_kws)
+            # Only add attachment bonuses if they're not already in layer system
+            # (check if the attachment has a registered effect)
+            attachments = get_attachments(creature, battlefield)
+            unregistered_attachments = [
+                att for att in attachments
+                if not any(e.source.instance_id == att.instance_id for e in self.layer_system.effects)
+            ]
+
+            if unregistered_attachments:
+                # These attachments don't have layer effects, add their bonuses
+                power += p_bonus
+                toughness += t_bonus
+                for kw in granted_kws:
+                    if kw.lower() not in [k.lower() for k in keywords]:
+                        keywords.append(kw)
+
+            return (power, toughness, keywords)
+        else:
+            # No layer effects active - use the original simple calculation
+            base_power = creature.eff_power()
+            base_toughness = creature.eff_toughness()
+            base_keywords = list(creature.keywords)
+
+            p_bonus, t_bonus, granted_kws = apply_attached_bonuses(creature, battlefield)
+
+            return (base_power + p_bonus, base_toughness + t_bonus, base_keywords + granted_kws)
 
     def creature_has_keyword_with_attachments(self, creature: Card, keyword: str, battlefield: List[Card]) -> bool:
-        """Check if creature has a keyword, including from attachments."""
+        """
+        Check if creature has a keyword, including from attachments and layer effects.
+
+        Uses the Layer System (Rule 613) to check Layer 6 effects that may have
+        added or removed abilities.
+        """
+        # Use layer system if there are active effects
+        if self.layer_system.effects:
+            keywords = self.layer_system.get_keywords(creature)
+            if keyword.lower() in [k.lower() for k in keywords]:
+                return True
+
+        # Also check base keywords
         if creature.has_keyword(keyword):
             return True
+
+        # Check attachment bonuses
         _, _, granted_kws = apply_attached_bonuses(creature, battlefield)
         return keyword.lower() in [k.lower() for k in granted_kws]
 
@@ -3351,12 +4191,280 @@ class Game:
         token = Card(
             name=name, mana_cost=ManaCost(), card_type="creature",
             power=power, toughness=toughness, keywords=keywords or [],
-            instance_id=self.next_id, controller=player.player_id, summoning_sick=True,
+            instance_id=self.next_id, controller=player.player_id,
+            owner=player.player_id,  # Token owner is the player who created it
+            summoning_sick=True,
             is_token=True  # Mark as token for SBA handling
         )
         self.next_id += 1
         player.battlefield.append(token)
         self.log.log(f"    Creates {power}/{toughness} {name}")
+
+    # =========================================================================
+    # COPY EFFECTS - Game Integration (MTG Rule 707)
+    # =========================================================================
+
+    def create_copy_of_permanent(self, permanent: Card, controller: Player,
+                                  modifications: List[Callable[[Card], None]] = None) -> Card:
+        """
+        Rule 707: Create a copy of a permanent and put it on the battlefield.
+
+        This is used for clone effects like Clone, Clever Impersonator, etc.
+        The copy enters as a new permanent under the specified controller.
+
+        Args:
+            permanent: The permanent to copy (must be on the battlefield)
+            controller: The player who will control the copy
+            modifications: Optional list of modifications (for "copy except..." effects)
+
+        Returns:
+            The created copy on the battlefield
+
+        Example usage:
+            # Clone entering as a copy of target creature
+            clone_copy = game.create_copy_of_permanent(
+                target_creature,
+                casting_player,
+                modifications=None
+            )
+
+            # Spark Double entering as non-legendary copy with +1/+1 counter
+            spark_copy = game.create_copy_of_permanent(
+                target_creature,
+                casting_player,
+                modifications=[
+                    modification_not_legendary,
+                    modification_add_counter("+1/+1", 1)
+                ]
+            )
+        """
+        # Create the copy using the standalone function with game's ID
+        copy = create_copy(permanent, modifications, instance_id=self.next_id)
+        self.next_id += 1
+
+        # Set controller/owner (copies are controlled by the player who created them)
+        copy.controller = controller.player_id
+        copy.owner = controller.player_id
+
+        # Put on battlefield
+        controller.battlefield.append(copy)
+
+        # Log the copy creation
+        self.log.log(f"    P{controller.player_id} creates copy of {permanent.name}")
+
+        # Fire ETB triggers for the copy
+        self.fire_etb(copy, controller)
+
+        return copy
+
+    def create_token_copy(self, permanent: Card, controller: Player,
+                          modifications: List[Callable[[Card], None]] = None) -> Card:
+        """
+        Rule 707.2/111.10: Create a token that's a copy of a permanent.
+
+        This is used for effects like Populate, Cackling Counterpart, etc.
+        The token copy has all copiable values of the original plus is_token=True.
+
+        Args:
+            permanent: The permanent to copy
+            controller: The player who will control the token
+            modifications: Optional list of modifications
+
+        Returns:
+            The created token copy on the battlefield
+
+        Example usage:
+            # Populate effect - copy a token
+            new_token = game.create_token_copy(existing_token, player)
+
+            # Cackling Counterpart - copy a creature as a token
+            token = game.create_token_copy(target_creature, casting_player)
+        """
+        # Create the copy using the standalone function
+        copy = create_copy(permanent, modifications, instance_id=self.next_id)
+        self.next_id += 1
+
+        # Mark as token (important for SBA handling - tokens cease to exist outside battlefield)
+        copy.is_token = True
+
+        # Set controller/owner
+        copy.controller = controller.player_id
+        copy.owner = controller.player_id
+
+        # Put on battlefield
+        controller.battlefield.append(copy)
+
+        # Log the token copy creation
+        self.log.log(f"    P{controller.player_id} creates token copy of {permanent.name}")
+
+        # Fire ETB triggers
+        self.fire_etb(copy, controller)
+
+        return copy
+
+    def copy_spell(self, spell_on_stack: StackItem, new_controller: Player,
+                   new_target: Any = None,
+                   modifications: List[Callable[[Card], None]] = None) -> StackItem:
+        """
+        Rule 707.10: Copy a spell on the stack.
+
+        This is used for effects like Fork, Twincast, Reverberate.
+        The copy is put on the stack above the original.
+
+        Args:
+            spell_on_stack: The StackItem representing the spell to copy
+            new_controller: The player who will control the copy
+            new_target: New target for the copy (if None, uses same target)
+            modifications: Optional modifications to apply
+
+        Returns:
+            The new StackItem representing the copied spell
+
+        Note: The copied spell will resolve before the original since stack is LIFO.
+        """
+        # Create copy of the spell card
+        spell_copy = copy_spell_on_stack(
+            spell_on_stack.card,
+            modifications,
+            instance_id=self.next_id
+        )
+        self.next_id += 1
+
+        # Create new stack item for the copy
+        copy_stack_item = StackItem(
+            card=spell_copy,
+            controller=new_controller.player_id,
+            target=new_target if new_target is not None else spell_on_stack.target,
+            stack_id=self.next_stack_id,
+            x_value=spell_on_stack.x_value,  # Copy X value
+            chosen_modes=spell_on_stack.chosen_modes.copy(),  # Copy chosen modes
+            was_kicked=spell_on_stack.was_kicked,  # Copy kicked status
+            kicker_count=spell_on_stack.kicker_count
+        )
+        self.next_stack_id += 1
+
+        # Put on stack (will resolve before original)
+        self.stack.append(copy_stack_item)
+
+        self.log.log(f"    P{new_controller.player_id} copies {spell_on_stack.card.name}")
+
+        return copy_stack_item
+
+    # =========================================================================
+    # ETB TRIGGER DOUBLING (Panharmonicon, etc.)
+    # =========================================================================
+
+    def get_etb_trigger_count(self, creature: Card, controller: Player) -> int:
+        """Get the number of times an ETB trigger should fire for a creature."""
+        trigger_count = 1
+        for card in controller.battlefield:
+            if any(ab in ["double_etb_triggers", "panharmonicon"]
+                   for ab in [a.lower() for a in card.abilities]):
+                trigger_count = 2
+                break
+        return trigger_count
+
+    # =========================================================================
+    # LAYER SYSTEM (MTG Rule 613)
+    # =========================================================================
+
+    def apply_layers(self) -> None:
+        """Apply the layer system for characteristic-modifying effects."""
+        all_permanents = self.p1.battlefield + self.p2.battlefield
+        # Layer 4: Type-changing effects (Blood Moon, etc.)
+        for permanent in all_permanents:
+            for card in all_permanents:
+                if "blood_moon" in [ab.lower() for ab in card.abilities]:
+                    if permanent.card_type == "land":
+                        if "legendary" not in permanent.keywords and permanent.name not in [
+                            "Plains", "Island", "Swamp", "Mountain", "Forest"]:
+                            permanent.produces = ["R"]
+
+    def calculate_creature_stats_with_layers(self, creature: Card,
+                                              controller: Player) -> Tuple[int, int, List[str]]:
+        """Calculate a creature's stats after applying all layer effects."""
+        base_power = creature.power
+        base_toughness = creature.toughness
+        keywords = list(creature.keywords)
+        power_bonus = 0
+        toughness_bonus = 0
+        power_bonus += creature.counters.get("+1/+1", 0)
+        toughness_bonus += creature.counters.get("+1/+1", 0)
+        power_bonus -= creature.counters.get("-1/-1", 0)
+        toughness_bonus -= creature.counters.get("-1/-1", 0)
+        for card in controller.battlefield:
+            if card.instance_id == creature.instance_id:
+                continue
+            for ab in card.abilities:
+                ab_lower = ab.lower()
+                if ab_lower in ["grant_plus1_plus1", "anthem_plus1_plus1", "lord"]:
+                    power_bonus += 1
+                    toughness_bonus += 1
+        all_bf = self.p1.battlefield + self.p2.battlefield
+        attach_p, attach_t, attach_kws = apply_attached_bonuses(creature, all_bf)
+        power_bonus += attach_p
+        toughness_bonus += attach_t
+        keywords.extend(attach_kws)
+        return (base_power + power_bonus, base_toughness + toughness_bonus, keywords)
+
+    # =========================================================================
+    # ADDITIONAL CLONE/COPY METHODS
+    # =========================================================================
+
+    def create_clone(self, clone_card: Card, target: Card, controller: Player) -> Card:
+        """Create a clone of a target creature."""
+        return self.create_copy_of_permanent(target, controller)
+
+    def create_modified_copy(self, original: Card, controller: Player,
+                              modifications: List[Callable[[Card], None]] = None) -> Card:
+        """Create a copy of a permanent with modifications."""
+        return self.create_copy_of_permanent(original, controller, modifications)
+
+    def execute_copy_ability(self, source: Card, trigger_spell: Card,
+                              controller: Player) -> List[Card]:
+        """Execute a copy ability that copies a spell for each other creature."""
+        copies = []
+        other_creatures = [c for c in controller.battlefield
+                         if c.card_type == "creature"
+                         and c.instance_id != source.instance_id]
+        for creature in other_creatures:
+            for item in self.stack:
+                if item.card.instance_id == trigger_spell.instance_id:
+                    copy_item = self.copy_spell(item, controller, new_target=creature)
+                    copies.append(copy_item.card)
+                    break
+        if copies:
+            self.log.log(f"    {source.name} copies spell for {len(copies)} other creatures")
+        return copies
+
+    # =========================================================================
+    # CONTROL CHANGE CONVENIENCE METHODS
+    # =========================================================================
+
+    def change_control(self, permanent: Card, new_controller_id: int,
+                       source: Card = None, duration: str = 'permanent') -> bool:
+        """Change control of a permanent. Wrapper for control_manager.change_control."""
+        if source is None:
+            source = Card(name="Control Effect", instance_id=self.next_id)
+            self.next_id += 1
+        return self.control_manager.change_control(permanent, new_controller_id, source, duration)
+
+    def grant_temporary_control(self, permanent: Card, new_controller_id: int,
+                                 source: Card = None) -> bool:
+        """Grant temporary control until end of turn (Act of Treason style)."""
+        if source is None:
+            source = Card(name="Threaten Effect", instance_id=self.next_id)
+            self.next_id += 1
+        self.control_manager.threaten_effect(permanent, new_controller_id, source)
+        return True
+
+    def apply_layers_to_copy(self, copy: Card, controller: Player) -> Tuple[int, int, List[str]]:
+        """Apply layers to a copied creature to get its final stats."""
+        return self.calculate_creature_stats_with_layers(copy, controller)
+
+    def apply_layers_with_control_change(self, permanent: Card, new_controller_id: int) -> None:
+        """Apply layer system after a control change."""
+        self.apply_layers()
 
     def _validate_target_on_resolution(self, card: Card, target: Any, caster: Player) -> bool:
         """
@@ -3883,6 +4991,40 @@ class Game:
                     player.battlefield.remove(target)
                     player.hand.append(target)
                     self.log.log(f"    Returns {target.name} to hand")
+
+        # Control-changing effects (Rule 108.4, Layer 2)
+        elif ab == "threaten" or ab == "act_of_treason":
+            # Gain control until end of turn, untap, grant haste
+            if isinstance(target, Card) and target.card_type == "creature":
+                # Find target on any battlefield
+                for p in [self.p1, self.p2]:
+                    if target in p.battlefield:
+                        self.control_manager.threaten_effect(target, player.player_id, card)
+                        break
+
+        elif ab == "gain_control" or ab == "mind_control":
+            # Permanent control change
+            if isinstance(target, Card):
+                for p in [self.p1, self.p2]:
+                    if target in p.battlefield:
+                        self.control_manager.change_control(target, player.player_id, card, duration='permanent')
+                        break
+
+        elif ab == "gain_control_eot":
+            # Gain control until end of turn (no untap/haste - like blue steal effects)
+            if isinstance(target, Card):
+                for p in [self.p1, self.p2]:
+                    if target in p.battlefield:
+                        self.control_manager.change_control(target, player.player_id, card, duration='end_of_turn')
+                        break
+
+        elif ab == "gain_control_source":
+            # Gain control while source (aura) remains on battlefield
+            if isinstance(target, Card):
+                for p in [self.p1, self.p2]:
+                    if target in p.battlefield:
+                        self.control_manager.aura_control_effect(target, card, player.player_id)
+                        break
 
         # Gain life
         elif ab.startswith("gain_life_") or ab.startswith("life_"):
@@ -4607,26 +5749,83 @@ class Game:
                     'counters': creature.counters.copy()
                 }
 
+                # Create die event and process through replacement effects (Rule 614)
+                # This handles Rest in Peace, Leyline of the Void, etc.
+                die_event = self.create_die_event(creature, player)
+                processed_event = self.process_event_with_replacements(die_event, player)
+
+                # Notify control manager before removal (for effects sourced by this permanent)
+                self.control_manager.on_permanent_leaves(creature)
+
                 player.battlefield.remove(creature)
+
                 if not creature.is_token:
-                    player.graveyard.append(creature)
-                self.fire_dies(creature, player, last_known)
+                    # Determine destination based on replacement effects
+                    destination = processed_event.destination_zone
+
+                    # Card goes to owner's zone, not controller's (Rule 400.3)
+                    owner = self.p1 if creature.owner == 1 else self.p2
+
+                    if destination == 'exile':
+                        owner.exile.append(creature)
+                        self.log.log(f"    {creature.name} is exiled (replacement effect)")
+                    else:
+                        # Default: graveyard
+                        owner.graveyard.append(creature)
+
+                    # Clear control effects since card changed zones
+                    creature.control_effects.clear()
+                    creature.controller = creature.owner
+
+                # Fire dies triggers (even if exiled, "dies" still triggers - it's the leaving battlefield)
+                # Note: Some effects care about WHERE the card goes, but "dies" just means "went to graveyard"
+                # Rest in Peace replaces going to graveyard with exile, so technically it doesn't "die"
+                if processed_event.destination_zone == 'graveyard':
+                    self.fire_dies(creature, player, last_known)
                 applied = True
 
         # Process planeswalker deaths
         for pw, player in planeswalkers_to_die:
             if pw in player.battlefield:
+                # Create die event and process through replacement effects
+                die_event = self.create_die_event(pw, player)
+                processed_event = self.process_event_with_replacements(die_event, player)
+
+                # Notify control manager before removal
+                self.control_manager.on_permanent_leaves(pw)
+
                 player.battlefield.remove(pw)
                 if not pw.is_token:
-                    player.graveyard.append(pw)
+                    owner = self.p1 if pw.owner == 1 else self.p2
+                    if processed_event.destination_zone == 'exile':
+                        owner.exile.append(pw)
+                        self.log.log(f"    {pw.name} is exiled (replacement effect)")
+                    else:
+                        owner.graveyard.append(pw)
+                    pw.control_effects.clear()
+                    pw.controller = pw.owner
                 applied = True
 
         # Process other permanents going to graveyard (legend rule, auras)
         for permanent, player in permanents_to_remove:
             if permanent in player.battlefield:
+                # Create die event and process through replacement effects
+                die_event = self.create_die_event(permanent, player)
+                processed_event = self.process_event_with_replacements(die_event, player)
+
+                # Notify control manager before removal
+                self.control_manager.on_permanent_leaves(permanent)
+
                 player.battlefield.remove(permanent)
                 if not permanent.is_token:
-                    player.graveyard.append(permanent)
+                    owner = self.p1 if permanent.owner == 1 else self.p2
+                    if processed_event.destination_zone == 'exile':
+                        owner.exile.append(permanent)
+                        self.log.log(f"    {permanent.name} is exiled (replacement effect)")
+                    else:
+                        owner.graveyard.append(permanent)
+                    permanent.control_effects.clear()
+                    permanent.controller = permanent.owner
                 applied = True
 
         # Process tokens ceasing to exist
@@ -4853,6 +6052,10 @@ class Game:
         # End of turn cleanup - remove temporary buffs
         self._end_of_turn_cleanup(act)
         self._end_of_turn_cleanup(opp)
+
+        # Control-changing effects cleanup (Rule 108.4)
+        # Remove "until end of turn" control effects and revert control
+        self.control_manager.end_of_turn_cleanup()
 
         self.active_id = 3 - self.active_id
         return True
